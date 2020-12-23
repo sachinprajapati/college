@@ -1,0 +1,8 @@
+ren = {'Student Ref. No': 'reg_no', "Father's Name": 'f_name', "Mother's Name": 'm_name', "Gender": 'gender', "Date Of Birth": 'dob', "Mobile No": 'phone', 'Category': 'category', 'Email ID': 'email'}
+
+
+//
+first_name = df['Student Name'].str.split().str[:-1].str.join(' ')
+last_name = df['Student Name'].str.split().str[-1]
+
+Model.objects.model._meta.db_table

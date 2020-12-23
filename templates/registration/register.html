@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+
+{% block body-attr %}class="login-layout"{% endblock %}
+
+{% block content %}
+
+		<div class="main-container">
+			<div class="main-content">
+				<div class="row">
+					<div class="col-sm-10 col-sm-offset-4">
+						<div class="col-md-5">
+							<div class="center">
+								<h1>
+									<i class="ace-icon fa fa-leaf green"></i>
+									<span class="red">Ace</span>
+									<span class="white" id="id-text2">Application</span>
+								</h1>
+								<h4 class="blue" id="id-company-text">&copy; Company Name</h4>
+							</div>
+
+							<div class="space-6"></div>
+
+							<div class="position-relative">
+								<div id="login-box" class="login-box visible widget-box no-border">
+									<div class="widget-body">
+										<div class="widget-main">
+											<h4 class="header blue lighter bigger">
+												<i class="ace-icon fa fa-coffee green"></i>
+												Register
+											</h4>
+
+											<div class="space-6"></div>
+
+											<form class="my-ajax-form">
+												{% csrf_token %}
+												{% include 'registration/form-errors.html' %}
+												<fieldset>
+													<label class="block clearfix">
+														<span class="block input-icon input-icon-right">
+															<input type="text" class="form-control" name="username" placeholder="Username" />
+															<i class="ace-icon fa fa-user"></i>
+														</span>
+													</label>
+
+													<label class="block clearfix">
+														<span class="block">
+															<input type="date" class="form-control" name="dob" placeholder="Date of Birth" required="" />
+														</span>
+													</label>
+
+													<div class="space"></div>
+													<div class="form-error" style="display:none;"></div>
+
+													<div class="clearfix">
+
+														<button type="submit" class="width-35 pull-right btn btn-sm btn-primary">
+															<i class="ace-icon fa fa-key"></i>
+															<span class="bigger-110">Verify</span>
+														</button>
+													</div>
+
+													<div class="space-4"></div>
+												</fieldset>
+											</form>
+										</div><!-- /.widget-main -->
+
+										<div class="toolbar clearfix">
+											<div>
+												<a href="#" data-target="#forgot-box" class="forgot-password-link">
+													<i class="ace-icon fa fa-arrow-left"></i>
+													I forgot my password
+												</a>
+											</div>
+
+											<div>
+												<a href="{% url 'login' %}" class="user-signup-link">
+													I want to login
+													<i class="ace-icon fa fa-arrow-right"></i>
+												</a>
+											</div>
+										</div>
+									</div><!-- /.widget-body -->
+								</div><!-- /.login-box -->
+
+							</div><!-- /.position-relative -->
+
+							<div class="navbar-fixed-top align-right">
+								<br />
+								&nbsp;
+								<a id="btn-login-dark" href="#">Dark</a>
+								&nbsp;
+								<span class="blue">/</span>
+								&nbsp;
+								<a id="btn-login-blur" href="#">Blur</a>
+								&nbsp;
+								<span class="blue">/</span>
+								&nbsp;
+								<a id="btn-login-light" href="#">Light</a>
+								&nbsp; &nbsp; &nbsp;
+							</div>
+						</div>
+					</div><!-- /.col -->
+				</div><!-- /.row -->
+			</div><!-- /.main-content -->
+		</div><!-- /.main-container -->
+{% endblock %}
+
+
+{% block end-script %}
+<script>
+$(document).ready(function(){
+    var $myForm = $('.my-ajax-form')
+    $myForm.submit(function(event){
+        event.preventDefault()
+        $('.form-error').css('display','none');
+        var $formData = $(this).serialize()
+        var $thisURL = $myForm.attr('data-url') || window.location.href // or set your own url
+        $.ajax({
+            method: "POST",
+            url: $thisURL,
+            data: $formData,
+            success: handleFormSuccess,
+            error: handleFormError,
+        })
+    })
+
+    function handleFormSuccess(data, textStatus, jqXHR){
+        console.log(data)
+        console.log(textStatus)
+        console.log(jqXHR)
+        //$myForm.reset(); // reset form data
+        $('.form-error').css('display','block');
+        if(data['status']){
+        	var cs = 'alert alert-success'
+        }else{
+        	var cs = 'alert alert-danger'
+        }
+        $('.form-error').addClass(cs);
+        $('.form-error').text(data['message']);
+    }
+
+    function handleFormError(jqXHR, textStatus, errorThrown){
+        console.log(jqXHR)
+        console.log(textStatus)
+        console.log(errorThrown)
+    }
+})
+</script>
+{% endblock %}

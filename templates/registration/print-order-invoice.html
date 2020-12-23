@@ -1,0 +1,263 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style type="text/css">
+    body{
+        background: #fff;
+    }
+</style>
+<div class="container-fluid">
+    <div class="container">
+         
+        <div class="job-seeker-content">
+
+            <div class="row">
+                <div class="col-xs-12 col-md-12" style="margin-top:50px;">
+                    <div style="margin:10px;border:2px solid black;">
+                    
+                    <div class="col-md-12">
+                        <div style="width:100px;height:100px;float:left;margin:5px;">
+                            <img src="<?php echo FRONT_MEDIA_URL; ?>img/ANC_LOGO.jpg">
+                        </div>
+                        <div style="text-align:center;margin-right:50px;">
+                            <h1 style="margin-top:0px">ANUGRAH NARAYAN COLLEGE, PATNA</h1>
+                            <span>(A Constituent Unit of Patliputra University, Patna)<br>
+                            Boring Road, Srikrishnapuri Patna – 800013<br></span>
+                            <span style="font-size:10px;">Website: https://www.ancpatna.ac.in, Phone: 0612 2540482</span>
+                        </div>
+                        <!--<div style="border:1px solid black; width:50px;height:50px;">
+                            <img src="<?php echo FRONT_MEDIA_URL; ?>img/ANC_LOGO.jpg">
+                        </div>-->
+                    </div>
+                    <div class="col-md-12">
+                    <div style="text-align:center;"><b>E-Receipt [College Copy]</b></div>
+                    </div>
+                    <div class="col-md-12">
+                        
+                        <table align="center">
+                            <tr>
+                                <td style="width:20%;font-weight:600">Name: </td>
+                                <td style="width:30%;font-weight:600">{{ user.get_full_name }}</td>
+                                <td style="width:20%;font-weight:600">Email Id: </td>
+                                <td style="width:30%;font-weight:600">{{ user.email }}</td>
+                            </tr>
+                            <tr>
+                                <td style="width:20%;font-weight:600">Father Name: </td>
+                                <td style="width:30%;font-weight:600">{{ user.profile.f_name }}</td>
+                                <td style="width:20%;font-weight:600">Mobile No: </td>
+                                <td style="width:30%;font-weight:600">{{ user.profile.phone }}</td>
+                            </tr>
+                            <tr>
+                                <td style="width:20%;font-weight:600">Applied For Stream: </td>
+                                <td style="width:30%;font-weight:600">{{ user.profile.coursedetail.course }}</td>
+                                <td style="width:20%;font-weight:600">Board Name: </td>
+                                <td style="width:30%;font-weight:600">{{ user.profile.coursedetail.}}</td>
+                            </tr>
+                            <tr>
+                                <td style="width:20%;font-weight:600">Intermediate Registration Id: </td>
+                                <td style="width:30%;font-weight:600"><?php echo $aUserDetails[0]->registration_id; ?></td>
+                                <td style="width:20%;font-weight:600">Category: </td>
+                                <td style="width:30%;font-weight:600">{{ user.profile.get_category_display }}</td>
+                            </tr>
+                            
+                            
+                        </table>
+                        
+                    </div>
+                    <div class="col-md-12">
+                        <table style="margin:20px;width:20%;float:left;">
+                        </table>
+                        <table border=1 style="margin:20px;width:100%;float:right;">
+                            <tr>
+                                <th style="width:10%;font-weight:600">Sr No</th>
+                                <th style="width:60%;font-weight:600">Description</th>
+                                <th style="width:30%;font-weight:600">Amount</th>
+                            </tr>
+                            <tr>
+                                <th style="width:10%;">1</th>
+                                <th style="width:60%;">Admission + Examination Fee</th>
+                                <th style="width:30%;"><?php echo $aUserOrder[0]->grand_total; ?></th>
+                            </tr>
+                            
+                        </table>
+                    </div>
+                    
+                    <div class="col-md-12">
+                        <div style="text-align:center">PAY MODE INFORMATION</div>
+                        <table align="center">
+                            <tr>
+                                <td style="width:20%;font-weight:600">Pay Mode: </td>
+                                <td style="width:30%;font-weight:600">Online</td>
+                                <td style="width:20%;font-weight:600">Date & Time of Payment: </td>
+                                <td style="width:30%;font-weight:600"><?php echo date("d-m-yy h:i A", $aUserOrder[0]->order_date); ?></td>
+                            </tr>
+                            <tr>
+                                <td style="width:20%;font-weight:600">Bank Name: </td>
+                                <td style="width:30%;font-weight:600"><?php echo $aUserOrder[0]->bank_name; ?></td>
+                                <td style="width:20%;font-weight:600">Payment Id: </td>
+                                <td style="width:30%;font-weight:600"><?php echo $aUserOrder[0]->uniq_order_id; ?></td>
+                            </tr>
+                            <tr>
+                                <td style="width:20%;font-weight:600">Total </td>
+                                <td style="width:30%;font-weight:600"><?php echo $aUserOrder[0]->grand_total; ?></td>
+                                <td style="width:20%;font-weight:600">Transaction ID</td>
+                                <td style="width:30%;font-weight:600"><?php echo $aUserOrder[0]->airp_aptransaction_id; ?></td>
+                            </tr>
+                            
+                        </table>
+                    </div>
+                    
+                    
+                  
+                    <div class="col-md-12">
+                        <div>Online Fee Paid</div>
+                        
+                    </div>
+                    <div class="col-md-12">
+                        <div style="text-align:center;font-weight:600;">This is computer generated Receipt. Does not required signature</div>
+                        
+                    </div>
+                    
+                    
+                         
+                    </div>
+                </div>
+            </div>
+            
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <div class="row">
+                <div class="col-xs-12 col-md-12" style="margin-top:50px;">
+                    <div style="margin:10px;border:2px solid black;">
+                    
+                    <div class="col-md-12">
+                        <div style="width:100px;height:100px;float:left;margin:5px;">
+                            <img src="<?php echo FRONT_MEDIA_URL; ?>img/ANC_LOGO.jpg">
+                        </div>
+                        <div style="text-align:center;margin-right:50px;">
+                            <h1 style="margin-top:0px">ANUGRAH NARAYAN COLLEGE, PATNA</h1>
+                            <span>(A Constituent Unit of Patliputra University, Patna)<br>
+                            Boring Road, Srikrishnapuri Patna – 800013<br></span>
+                            <span style="font-size:10px;">Website: https://www.ancpatna.ac.in, Phone: 0612 2540482</span>
+                        </div>    
+                    </div>
+                    <div class="col-md-12">
+                    <div style="text-align:center;"><b>E-Receipt [Student Copy]</b></div>
+                    </div>
+                    <div class="col-md-12">
+                        
+                        <table align="center">
+                            <tr>
+                                <td style="width:20%;font-weight:600">Name: </td>
+                                <td style="width:30%;font-weight:600">{{ user.get_full_name }}</td>
+                                <td style="width:20%;font-weight:600">Email Id: </td>
+                                <td style="width:30%;font-weight:600">{{ user.email }}</td>
+                            </tr>
+                            <tr>
+                                <td style="width:20%;font-weight:600">Father Name: </td>
+                                <td style="width:30%;font-weight:600"><?php echo $aUserDetails[0]->father_name; ?></td>
+                                <td style="width:20%;font-weight:600">Mobile No: </td>
+                                <td style="width:30%;font-weight:600"><?php echo $aUserDetails[0]->mobile; ?></td>
+                            </tr>
+                            <tr>
+                                <td style="width:20%;font-weight:600">Applied For Stream: </td>
+                                <td style="width:30%;font-weight:600"><?php echo $aUserDetails[0]->applied_for; ?></td>
+                                <td style="width:20%;font-weight:600">Board Name: </td>
+                                <td style="width:30%;font-weight:600"><?php echo $aUserFromDetails[0]->matric_board_name; ?></td>
+                            </tr>
+                            <tr>
+                                <td style="width:20%;font-weight:600">Intermediate Registration Id: </td>
+                                <td style="width:30%;font-weight:600"><?php echo $aUserDetails[0]->registration_id; ?></td>
+                                <td style="width:20%;font-weight:600">Category: </td>
+                                <td style="width:30%;font-weight:600"><?php
+                                
+                                $aCatDetails = $this->caste_model->SelectRowsByID($aUserFromDetails[0]->caste);
+                                echo $aCatDetails[0]->title; ?></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-12">
+                        <table style="margin:20px;width:20%;float:left;">
+                            <tr>
+                                <td style="width:40%;"><img style="width:100px;height:100px;" src="<?php echo UP_URL.'student_photo/'.$aUserFromDetails[0]->student_photo; ?>"> </td>
+                                
+                            </tr>
+                            <tr>
+                                <td style="width:40%;height:50px;"><img style="width:100px;height:50px;" src="<?php echo UP_URL.'student_signature/'.$aUserFromDetails[0]->sesign; ?>"> </td>
+                                
+                            </tr>
+                        </table>
+                        <table border=1 style="margin:20px;width:100%">
+                            <tr>
+                                <th style="width:10%;font-weight:600">Sr No</th>
+                                <th style="width:60%;font-weight:600">Description</th>
+                                <th style="width:30%;font-weight:600">Amount</th>
+                            </tr>
+                            <tr>
+                                <th style="width:10%;">1</th>
+                                <th style="width:60%;">Admission + Examination Fee</th>
+                                <th style="width:30%;"><?php echo $aUserOrder[0]->grand_total; ?></th>
+                            </tr>
+                            
+                        </table>
+                    </div>
+                    
+                    <div class="col-md-12">
+                        <div style="text-align:center">PAY MODE INFORMATION</div>
+                        <table align="center">
+                            <tr>
+                                <td style="width:20%;font-weight:600">Pay Mode: </td>
+                                <td style="width:30%;font-weight:600">Online</td>
+                                <td style="width:20%;font-weight:600">Date & Time of Payment  </td>
+                                <td style="width:30%;font-weight:600"><?php echo date("d-m-yy h:i A", $aUserOrder[0]->order_date); ?></td>
+                            </tr>
+                            <tr>
+                                <td style="width:20%;font-weight:600">Bank Name: </td>
+                                <td style="width:30%;font-weight:600"><?php echo $aUserOrder[0]->bank_name; ?></td>
+                                <td style="width:20%;font-weight:600">Payment Id: </td>
+                                <td style="width:30%;font-weight:600"><?php echo $aUserOrder[0]->uniq_order_id; ?></td>
+                            </tr>
+                            <tr>
+                                <td style="width:20%;font-weight:600">Total </td>
+                                <td style="width:30%;font-weight:600"><?php echo $aUserOrder[0]->grand_total; ?></td>
+                                <td style="width:20%;font-weight:600">Transaction ID</td>
+                                <td style="width:30%;font-weight:600"><?php echo $aUserOrder[0]->airp_aptransaction_id; ?></td>
+                            </tr>
+                            
+                        </table>
+                    </div>
+                    
+                    <div class="col-md-12">
+                        <div>Online Fee Paid</div>
+                        
+                    </div>
+                    <div class="col-md-12">
+                        <div style="text-align:center;font-weight:600;">This is computer generated Receipt. Does not required signature</div>
+                        
+                    </div>
+                   
+                    
+                    
+                    
+                         
+                    </div>
+                </div>
+            </div>
+            
+            
+        </div>
+    </div>
+</div>
+{% endblock %}

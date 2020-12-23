@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+
+{% block body-attr %}class="no-skin"{% endblock %}
+
+{% block content %}
+{% include 'student/navbar.html' %}
+
+
+<div class="main-container ace-save-state" id="main-container">
+   <script type="text/javascript">
+      try{ace.settings.loadState('main-container')}catch(e){}
+   </script>
+   {% include 'student/nav-list.html' %}
+   <div class="main-content">
+      <div class="main-content-inner">
+         <div class="breadcrumbs ace-save-state" id="breadcrumbs">
+            <ul class="breadcrumb">
+               <li>
+                  <i class="ace-icon fa fa-home home-icon"></i>
+                  <a href="#">Home</a>
+               </li>
+               <li class="active">Student Basic Inforamtion</li>
+            </ul>
+            <!-- /.breadcrumb -->
+            <div class="nav-search" id="nav-search">
+               <form class="form-search">
+                  <span class="input-icon">
+                  <input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off">
+                  <i class="ace-icon fa fa-search nav-search-icon"></i>
+                  </span>
+               </form>
+            </div>
+            <!-- /.nav-search -->
+         </div>
+        <div class="page-content">
+            <div id="ContentPlaceHolder1_pnluploaddata">
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="widget-box">
+                            <div class="widget-header">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <h4 class="widget-title">Student UG Admission</h4>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="widget-body">
+                                <div class="widget-main">
+                                    <div id="ContentPlaceHolder1_pnldata">
+	
+                                        <div class="row" style="padding-top: 5px;">
+                                            <div class="col-sm-2">
+                                                <b>Student Name</b>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <span id="ContentPlaceHolder1_lblstudentname">{{ user.get_full_name }}</span>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <b>Registration No.</b>
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <span id="ContentPlaceHolder1_lblregistrationno">User Name</span>
+                                            </div>
+                                        </div>
+                                        <div class="row" style="padding-top: 5px;">
+                                            <div class="col-sm-2">
+                                                <b>Father's Name</b>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <span id="ContentPlaceHolder1_lblfathersname">{{ user.profile.f_name }}</span>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <b>Mother's Name</b>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <span id="ContentPlaceHolder1_lblmothrsname">{{ user.profile.m_name }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="row" style="padding-top: 5px;">
+                                            <div class="col-sm-2">
+                                                <b>Gender</b>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <span id="ContentPlaceHolder1_lblgender">{{ user.profile.get_gender_display }}</span>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <b>Date Of Birth</b>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <span id="ContentPlaceHolder1_lbldateofbirth">{{ user.profile.dob }}</span>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <b>Reservation Category</b>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <span id="ContentPlaceHolder1_lblcategory">{{ user.profile.get_category_display }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="row" style="padding-top: 5px;">
+                                            <div class="col-sm-2">
+                                                <b>Mobile No</b>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <span id="ContentPlaceHolder1_lblmobileno">{{ user.profile.phone }}</span>
+                                                &nbsp;&nbsp;&nbsp;|| &nbsp;&nbsp;&nbsp;
+                                                <span id="ContentPlaceHolder1_lblwhatsappno">9999999999</span>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <b>E-Mail ID</b>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <span id="ContentPlaceHolder1_lblemailid">{{ user.email }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="row" style="padding-top: 5px;">
+                                            <div class="col-sm-2">
+                                                <b>Address</b>
+                                            </div>
+                                            <div class="col-sm-10">
+                                                <span id="ContentPlaceHolder1_lbladdress">{{ user.profile.address }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="row" style="padding-top: 5px;">
+                                            <div class="col-sm-2">
+                                                <b>Course Name</b>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <span id="ContentPlaceHolder1_lblcoursename">{{ user.profile.coursedetail.course }}</span>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <b>Academic Session</b>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <span id="ContentPlaceHolder1_lblaccsession">{{ user.profile.coursedetail.last_session }}</span>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <b>Payment For</b>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <span id="ContentPlaceHolder1_lblpaymentfor">
+                                                {% for f in fm %}
+                                                    <strong>{{f.feehead|title}}</strong>{% if not forloop.last %}{% ifequal forloop.revcounter 2 %} and {% else %}, {% endifequal %}{% else %}{% endif %}
+                                                {% endfor %}
+                                                </span>
+                                            </div>
+                                        </div><br/>
+                                        {% if practical %}
+                                        <div class="row">                                                
+                                            <div class="col-sm-2">
+                                                <b>Practical Exam Payment</b>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <span id="ContentPlaceHolder1_lblpaymentfor">
+                                                {% for p in practical %}
+                                                    <strong>{{p|title}}</strong>{% if not forloop.last %}{% ifequal forloop.revcounter 2 %} and {% else %}, {% endifequal %}{% else %}{% endif %}
+                                                {% endfor %}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                        <br>
+                                        <div class="row" style="padding-top: 5px;">
+                                            <div class="col-sm-2">
+                                            </div>
+                                            <div align="center" class="col-sm-8">
+                                                
+                                                <b>Paid Amount :: </b>
+                                                <span id="ContentPlaceHolder1_lbltotalamount" style="color:DarkSlateBlue;font-size:Large;font-weight:bold;">{{ fee }}</span>
+                                            </div>
+                                            <div class="col-sm-2">
+                                            </div>
+                                        </div>
+                                        <div class="hr hr8 hr-double hr-dotted"></div>
+                                        {% if fee %}
+                                        <div class="row" style="padding-top: 5px;">
+                                            <div align="center" class="col-sm-12">
+                                                <a href="{% url 'college:PaymentInit' %}">
+                                                    <input type="submit" name="ctl00$ContentPlaceHolder1$btnpaynow" value="Proceed for payment" class="btn btn-primary" tabindex="0">
+                                                </a>
+                                            </div>
+                                        </div>
+                                        {% else %}
+                                            <div class="alert alert-danger">
+                                                <li>You are not verified, Please Contact</li>
+                                            </div>
+                                        {% endif %}                                        
+                                   </div>                                        
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+      </div>
+      <hr>
+      <div id="ContentPlaceHolder1_pnldocdata">
+      </div>
+      </form>
+   </div>
+</div>
+<!-- /.col -->
+</div>
+<!-- /.row -->
+<!-- PAGE CONTENT ENDS -->
+</div>
+<!-- /.col -->
+</div>
+<!-- /.row -->
+</div>
+</div>
+<!-- PAGE CONTENT ENDS -->
+</div>
+<!-- /.col -->
+</div><!-- /.row -->
+</div><!-- /.page-content -->
+</div>
+{% endblock %}
+
+
+{% block end-script %}
+<script type="text/javascript">
+    $("#id_total_marks,#id_obtained_marks").on("keyup change", function(e) {
+        var per = ($("#id_obtained_marks").val()*100)/$("#id_total_marks").val();
+        $("#ContentPlaceHolder1_txtpercentagemarks").val(per);
+    })
+    $(document).ready(function(){
+        var per = ($("#id_obtained_marks").val()*100)/$("#id_total_marks").val();
+        $("#ContentPlaceHolder1_txtpercentagemarks").val(per);
+    });
+</script>
+<script type="text/javascript">
+   function UpdateEducation(url) {
+   var ask = window.confirm("Are you sure you want to Edit this detail?");
+      if (ask) {
+        window.location.href = url;
+
+      }
+   }
+</script>
+{% endblock %}

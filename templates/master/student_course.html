@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+
+{% block body-attr %}class="no-skin"{% endblock %}
+
+{% block content %}
+{% include 'student/navbar.html' %}
+
+
+<div class="main-container ace-save-state" id="main-container">
+<script type="text/javascript">
+	try{ace.settings.loadState('main-container')}catch(e){}
+</script>
+
+{% include 'student/masternav-list.html' %}
+
+			<div class="main-content">
+				<div class="main-content-inner">
+					<div class="breadcrumbs ace-save-state" id="breadcrumbs">
+						<ul class="breadcrumb">
+							<li>
+								<i class="ace-icon fa fa-home home-icon"></i>
+								<a href="#">Home</a>
+							</li>
+							<li class="active">Student Basic Inforamtion</li>
+						</ul><!-- /.breadcrumb -->
+
+						<div class="nav-search" id="nav-search">
+							<form class="form-search">
+								<span class="input-icon">
+									<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off">
+									<i class="ace-icon fa fa-search nav-search-icon"></i>
+								</span>
+							</form>
+						</div><!-- /.nav-search -->
+					</div>
+					
+                <div class="page-content">
+                <div id="ContentPlaceHolder1_pnlstudent">
+	
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="tabbable">
+                                        <!--Tasb-heading Start-->
+                                        
+                                            <div class="panel-body">
+                                                <!-- Nav tabs -->
+                                                <ul class="nav nav-tabs">
+                                                    <li><a href="{% url 'master:update_student' student.profile.id %}"><i class="green ace-icon fa fa-user-md bigger-120"></i>Student Basic Profile Information</a></li>
+                                                    <li><a href="{% url 'master:update_student_education' student.id %}"><i class="green ace-icon fa fa-university bigger-120"></i>Student Previous Education Details</a></li>
+                                                    <li class="active"><a href="#"><i class="green ace-icon fa fa-book bigger-120"></i>Student Academic Course</a></li>
+                                                </ul>
+                                            </div>
+                                        
+                                        <!--Tasb-heading End-->
+                                        <div id="ContentPlaceHolder1_pnlcontent">
+                                        <form action="" method="post" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="profile" value="{{ student.profile.id }}">
+                                        <div class="tab-content">
+                                                <div id="ContentPlaceHolder1_pnldata" class="aspNetDisabled">
+			
+                                                    <div class="row">
+                                                        <div align="Left" class="col-lg-2" style="padding-left: 30px;">
+                                                            <b>Course Name</b>
+                                                        </div>
+                                                        <div align="center" class="col-lg-2">
+                                                            {{ form.course }}
+                                                            
+                                                        </div>
+                                                        <div align="Left" class="col-lg-2">
+                                                            <b>Academic Session</b>
+                                                        </div>
+                                                        <div align="center" class="col-lg-2">
+                                                            {{ form.last_session }}
+                                                        </div>
+                                                        <div align="Left" class="col-lg-2">
+                                                            <b>Enroll Session</b>
+                                                        </div>
+                                                        <div align="center" class="col-lg-2">
+                                                            {{ form.enroll_session }}
+                                                        </div>
+
+                                                    </div>
+                                                
+		</div>
+                                                <div class="row" style="padding-top: 5px;">
+                                                    <div align="Left" class="col-lg-2" style="padding-left: 30px;">
+                                                        <b>12'th Marksheet No</b>
+                                                    </div>
+                                                    <div align="center" class="col-lg-2">
+                                                        {{ form.inter_marks }}
+                                                    </div>
+                                                    <div align="Left" class="col-lg-2">
+                                                        <b>12'th Roll Code</b>
+                                                    </div>
+                                                    <div align="center" class="col-lg-2">
+                                                        {{ form.inter_roll_code }}
+                                                    </div>
+                                                    <div align="Left" class="col-lg-2">
+                                                        <b>12'th Roll No</b>
+                                                    </div>
+                                                    <div align="center" class="col-lg-2">
+                                                        {{ form.inter_roll_no }}
+                                                    </div>
+                                                </div>
+                                                <div id="ContentPlaceHolder1_pnlcoursedata">
+			
+                                                    <hr>
+                                                    
+                                                    <div class="row" style="padding-top: 5px;">
+                                                        <div align="Left" class="col-lg-2" style="padding-left: 30px;">
+                                                            <b>
+                                                                <span id="ContentPlaceHolder1_lblpaper1">Honours Paper Name</span>
+                                                            </b>
+                                                        </div>
+                                                        <div align="center" class="col-lg-3">
+                                                        	<!-- <select class="form-control" name="hons_paper" required="" id="id_hons_paper">
+                                                                
+                                                            </select> -->
+                                                            {{ form.hons_paper }}
+                                                        </div>
+                                                        <div align="Left" class="col-lg-2">
+                                                            <b>
+                                                                <span id="ContentPlaceHolder1_lblpaper2">Sub. Paper 1 Name</span></b>
+                                                        </div>
+                                                        <div align="center" class="col-lg-3">
+                                                        	<!-- <select name="sub1_paper" class="form-control" required="" id="id_sub1_paper">
+                                                            </select> -->
+                                                            {{ form.sub1_paper }}
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="row" style="padding-top: 5px;">
+                                                        <div align="Left" class="col-lg-2" style="padding-left: 30px;">
+                                                            <b>
+                                                                <span id="ContentPlaceHolder1_lblpaper3">Sub. Paper 2 Name</span></b>
+                                                        </div>
+                                                        <div align="center" class="col-lg-3">
+                                                        	<!-- <select name="sub2_paper" class="form-control" required="" id="id_sub2_paper">
+                                                            </select> -->
+                                                            {{ form.sub2_paper }}
+                                                        </div>
+                                                        <div align="Left" class="col-lg-2">
+                                                            <b>
+                                                                <span id="ContentPlaceHolder1_lblcompositionpaper"> Composition Paper</span></b>
+
+                                                        </div>
+                                                        <div align="center" class="col-lg-3">
+                                                        {{ form.comp_paper }}
+                                                        </div>
+                                                        
+                                                    </div>
+                                                
+		</div>
+                                                <hr>
+                                                {% include 'registration/form-errors.html' %}
+                                                <div class="row">
+                                                    <div align="center" class="col-lg-12">
+                                                        <input type="submit" name="ctl00$ContentPlaceHolder1$btnstore" value="Submit &amp; Next" id="ContentPlaceHolder1_btnstore" class="btn btn-primary">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+										</div>
+                                    </div>
+                                </div>
+                                <!-- /.col -->
+                            </div>
+                            <!-- /.row -->
+
+                            <!-- PAGE CONTENT ENDS -->
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                
+</div>
+            </div>
+                                        
+	</div>
+                                        
+                                        <hr>
+                                        <div id="ContentPlaceHolder1_pnldocdata">
+                                        
+	</div>
+									</form>
+                                    </div>
+                                </div>
+                                <!-- /.col -->
+                            </div>
+                            <!-- /.row -->
+
+                            <!-- PAGE CONTENT ENDS -->
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                
+</div>
+            </div>
+
+
+								<!-- PAGE CONTENT ENDS -->
+							</div>
+					<!-- /.col -->
+						</div><!-- /.row -->
+					</div><!-- /.page-content -->
+				</div>
+{% endblock %}
+
+{% block end-script %}
+<script type="text/javascript">
+    $("#id_hons_paper").on('change', function(e){
+        var hons = $("#id_hons_paper").val();
+        var $options = $("#id_hons_paper > option").clone();
+        $('#id_sub1_paper').find('option').remove().end().append($options);
+        $("#id_sub1_paper option[value='"+hons+"']").remove();
+        var $options = $("#id_hons_paper > option").clone();
+        $('#id_sub2_paper').find('option').remove().end().append($options);
+        $("#id_sub2_paper option[value='"+hons+"']").remove();
+    });
+    $("#id_sub1_paper").on('change', function(e){
+        var id_sub1_paper = $("#id_sub1_paper").val();
+        var $options = $("#id_sub1_paper > option").clone();
+        $('#id_sub2_paper').find('option').remove().end().append($options);
+        $("#id_sub2_paper option[value='"+id_sub1_paper+"']").remove();
+    });
+</script>
+<script type="text/javascript">
+    $( document ).ready(function() {
+        var hons = $("#id_hons_paper").val();
+        $("#id_sub1_paper option[value='"+hons+"']").remove();
+        $("#id_sub2_paper option[value='"+hons+"']").remove();
+        var id_sub1_paper = $("#id_sub1_paper").val();
+        $("#id_sub2_paper option[value='"+id_sub1_paper+"']").remove();
+    })
+</script>
+{% endblock %}

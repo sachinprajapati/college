@@ -1,0 +1,278 @@
+{% extends 'base.html' %}
+
+{% block body-attr %}class="no-skin"{% endblock %}
+
+{% block content %}
+{% include 'student/navbar.html' %}
+
+
+<div class="main-container ace-save-state" id="main-container">
+   <script type="text/javascript">
+      try{ace.settings.loadState('main-container')}catch(e){}
+   </script>
+   {% include 'student/masternav-list.html' %}
+   <div class="main-content">
+      <div class="main-content-inner">
+         <div class="breadcrumbs ace-save-state" id="breadcrumbs">
+            <ul class="breadcrumb">
+               <li>
+                  <i class="ace-icon fa fa-home home-icon"></i>
+                  <a href="#">Home</a>
+               </li>
+               <li class="active">Student Basic Inforamtion</li>
+            </ul>
+            <!-- /.breadcrumb -->
+            <div class="nav-search" id="nav-search">
+               <form class="form-search">
+                  <span class="input-icon">
+                  <input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off">
+                  <i class="ace-icon fa fa-search nav-search-icon"></i>
+                  </span>
+               </form>
+            </div>
+            <!-- /.nav-search -->
+         </div>
+         <div class="page-content">
+            <div id="ContentPlaceHolder1_pnlstudent">
+               <div class="row">
+                  <div class="col-xs-12">
+                     <div class="row">
+                        <div class="col-sm-12">
+                           <div class="tabbable">
+                              <!--Tasb-heading Start-->
+                              <div class="panel-body">
+                                 <!-- Nav tabs -->
+                                 <ul class="nav nav-tabs">
+                                    <li><a href="{% url 'master:update_student' student.profile.id %}"><i class="green ace-icon fa fa-user-md bigger-120"></i>Student Basic Profile Information</a></li>
+                                    <li class="active"><a href="#"><i class="green ace-icon fa fa-university bigger-120"></i>Student Previous Education Details</a></li>
+                                    <li><a href="{% url 'master:course_detail' student.id %}"><i class="green ace-icon fa fa-book bigger-120"></i>Student Academic Course</a></li>
+                                 </ul>
+                              </div>
+                              <!--Tasb-heading End-->
+                              <div id="ContentPlaceHolder1_pnlcontent">
+                                 <form action="" method="post" enctype="multipart/form-data">
+                                    <input type="hidden" name="profile" value="{{ student.profile.id }}">
+                                    {% csrf_token %}
+                                    <div class="tab-content">
+                                       <div class="row">
+                                          <div align="Left" class="col-lg-2" style="padding-left: 20px;">
+                                             <b>Course Name </b>
+                                          </div>
+                                          <div align="center" class="col-lg-2">
+                                             {{ form.course }}
+                                          </div>
+                                          <div align="right" class="col-lg-1">
+                                             <b>Stream </b>
+                                          </div>
+                                          <div align="center" class="col-lg-3">
+                                             {{ form.stream }}
+                                          </div>
+                                          <div align="right" class="col-lg-2">
+                                             <b>Passing Year</b>
+                                          </div>
+                                          <div align="left" class="col-lg-2" style="padding-right: 30px;">
+                                             {{ form.passout }}
+                                          </div>
+                                       </div>
+                                       <div class="row" style="padding-top: 5px;">
+                                          <div align="Left" class="col-lg-2" style="padding-left: 20px;">
+                                             <b>Board/University Name </b>
+                                          </div>
+                                          <div align="center" class="col-lg-3">
+                                             {{ form.board }}
+                                          </div>
+                                          <div align="right" class="col-lg-2">
+                                             <b>School/College Name </b>
+                                          </div>
+                                          <div align="center" class="col-lg-5" style="padding-right: 30px;">
+                                             {{ form.scholl_name }}
+                                          </div>
+                                       </div>
+                                       <div class="row" style="padding-top: 5px;">
+                                          <div align="Left" class="col-lg-2" style="padding-left: 20px;">
+                                             <b>Marks Type
+                                             </b>
+                                          </div>
+                                          <div align="center" class="col-lg-2">
+                                             {{ form.marks_type }}
+                                          </div>
+                                          <div align="right" class="col-lg-2">
+                                             <b>
+                                             <span id="ContentPlaceHolder1_lbltotalmarks" style="font-weight:bold;">Total Marks</span>
+                                             </b>
+                                          </div>
+                                          <div align="center" class="col-lg-2">
+                                             {{ form.total_marks }}
+                                          </div>
+                                          <div align="right" class="col-lg-2">
+                                             <span id="ContentPlaceHolder1_lblobtainedmarks" onkeyup="return Calculater();" style="font-weight:bold;">Obtained Marks</span>
+                                          </div>
+                                          <div align="center" class="col-lg-2" style="padding-right: 30px;">
+                                             {{ form.obtained_marks }}
+                                          </div>
+                                       </div>
+                                       <div class="row" style="padding-top: 5px;">
+                                          <div align="Left" class="col-lg-2" style="padding-left: 20px;">
+                                             <b>Marks Percentage
+                                             </b>
+                                          </div>
+                                          <div align="left" class="col-lg-2" style="padding-right: 30px;">
+                                             <input name="ctl00$ContentPlaceHolder1$txtpercentagemarks" type="text" id="ContentPlaceHolder1_txtpercentagemarks" class="form-control">
+                                          </div>
+                                          <div align="right" class="col-lg-2">
+                                             <b>Upload Marksheet</b>
+                                          </div>
+                                          <div align="center" class="col-lg-4">
+                                             <span class=" btn btn-success" style="width: 100%; height: 40px;">
+                                                <!-- <input type="file" name="{{ form.marksheet.name }}" id="id_marksheet" accept="images/*" required="" multiple="false" style="width:100%;"> -->
+                                                {{ form.marksheet }}
+                                             </span>
+                                             <p style="font-size: smaller; color: red;">* Marksheet File Type is .jpg and .jpeg and Size Max. 100KB </p>
+                                          </div>
+                                          <div align="left" class="col-lg-2">
+                                             <img src="{{ user.profile.previouseducation.marksheet.url }}" id="id_marksheet_display" class="img-responsive" style="max-height: 220px;">
+                                          </div>
+                                       </div>
+                                       {% if form.errors %}
+                                       {{ form.errors }}
+                                       {% endif %}
+                                       <div class="row">
+                                          <div align="center" class="col-lg-12">
+                                             <input type="submit" name="ctl00$ContentPlaceHolder1$btnadd" value="Add Details" onclick="return Validate();" id="ContentPlaceHolder1_btnadd" class="btn btn-primary">
+                                             <input type="submit" name="ctl00$ContentPlaceHolder1$btnreset" value="Reset" id="ContentPlaceHolder1_btnreset" class="btn btn-success">
+                                          </div>
+                                       </div>
+                                       {% if not update %}
+                                       {% if student.profile.previouseducation_set.all %}
+                                       <div id="ContentPlaceHolder1_pnleducationdata">
+                                          <div class="hr hr8 hr-double hr-dotted"></div>
+                                          <div class="row">
+                                             <div align="center" class="col-lg-12">
+                                                <span style="font-size: medium; font-weight: bold;">Educational Details</span>
+                                             </div>
+                                          </div>
+                                          <div class="row">
+                                             <div align="center" class="col-lg-12" style="padding-left: 10px; padding-right: 10px;">
+                                                <div>
+                                                   <table cellspacing="0" cellpadding="4" rules="all" border="1" id="ContentPlaceHolder1_GVStudentEducationaldetails" style="color:#333333;border-style:Solid;font-size:Smaller;border-collapse:collapse;">
+                                                      <tbody>
+                                                         <tr style="color:White;background-color:#507CD1;font-weight:bold;">
+                                                            <th scope="col">Sl#</th>
+                                                            <th align="center" scope="col" style="width:100px;">Course Name</th>
+                                                            <th align="center" scope="col" style="width:150px;">Board/University</th>
+                                                            <th align="center" scope="col" style="width:200px;">School/College</th>
+                                                            <th align="center" scope="col" style="width:100px;">Stream</th>
+                                                            <th align="center" scope="col" style="width:50px;">Passing Year</th>
+                                                            <th align="center" scope="col" style="width:100px;">Total Marks</th>
+                                                            <th align="center" scope="col" style="width:100px;">Obtained Marks</th>
+                                                            <th align="center" scope="col" style="width:100px;">Marks %</th>
+                                                            <th scope="col" style="width:100px;">Marks Sheet</th>
+                                                            <th scope="col" style="width:50px;">Edit</th>
+                                                         </tr>
+                                                         {% for i in student.profile.previouseducation_set.all %}
+                                                         <tr style="background-color:#EFF3FB;">
+                                                            <td>{{ forloop.counter }}</td>
+                                                            <td>{{ i.course }}</td>
+                                                            <td>{{ i.board }}</td>
+                                                            <td>{{ i.scholl_name }}</td>
+                                                            <td>{{ i.get_stream_display }}</td>
+                                                            <td>{{ i.get_passout_display }}</td>
+                                                            <td>{{ i.total_marks }}</td>
+                                                            <td>{{ i.obtained_marks }}</td>
+                                                            <td>{{ i.get_marks_perc }}</td>
+                                                            <td align="center"><a href="{{ i.marksheet.url }}" target="_blank">Marks Sheet</a>
+                                                            </td>
+                                                            <td align="center">
+                                                               <span class="fa fa-pencil fa-2x" onclick="UpdateEducation('{% url 'master:update_education_detail' i.id student.id %}');"></span>
+                                                            </td>
+                                                         </tr>
+                                                         {% endfor %}
+                                                         <tr style="color:White;background-color:#507CD1;font-weight:bold;">
+                                                            <td>&nbsp;</td>
+                                                            <td>&nbsp;</td>
+                                                            <td>&nbsp;</td>
+                                                            <td>&nbsp;</td>
+                                                            <td>&nbsp;</td>
+                                                            <td>&nbsp;</td>
+                                                            <td>&nbsp;</td>
+                                                            <td>&nbsp;</td>
+                                                            <td>&nbsp;</td>
+                                                            <td>&nbsp;</td>
+                                                            <td>&nbsp;</td>
+                                                         </tr>
+                                                      </tbody>
+                                                   </table>
+                                                </div>
+                                                <br>
+                                             </div>
+                                          </div>
+                                          <div class="row">
+                                             <div align="Right" class="col-lg-12">
+                                                <a href="{% url 'master:course_detail' student.id %}" class="btn btn-success">Next</a>
+                                             </div>
+                                          </div>
+                                       </div>
+                                       {% endif %}
+                                       {% endif %}
+                                    </div>
+                                 </form>
+                              </div>
+                           </div>
+                        </div>
+                        <!-- /.col -->
+                     </div>
+                     <!-- /.row -->
+                     <!-- PAGE CONTENT ENDS -->
+                  </div>
+                  <!-- /.col -->
+               </div>
+               <!-- /.row -->
+            </div>
+         </div>
+      </div>
+      <hr>
+      <div id="ContentPlaceHolder1_pnldocdata">
+      </div>
+      </form>
+   </div>
+</div>
+<!-- /.col -->
+</div>
+<!-- /.row -->
+<!-- PAGE CONTENT ENDS -->
+</div>
+<!-- /.col -->
+</div>
+<!-- /.row -->
+</div>
+</div>
+<!-- PAGE CONTENT ENDS -->
+</div>
+<!-- /.col -->
+</div><!-- /.row -->
+</div><!-- /.page-content -->
+</div>
+{% endblock %}
+
+
+{% block end-script %}
+<script type="text/javascript">
+    $("#id_total_marks,#id_obtained_marks").on("keyup change", function(e) {
+        var per = ($("#id_obtained_marks").val()*100)/$("#id_total_marks").val();
+        $("#ContentPlaceHolder1_txtpercentagemarks").val(per);
+    })
+    $(document).ready(function(){
+        var per = ($("#id_obtained_marks").val()*100)/$("#id_total_marks").val();
+        $("#ContentPlaceHolder1_txtpercentagemarks").val(per);
+    });
+</script>
+<script type="text/javascript">
+   function UpdateEducation(url) {
+   var ask = window.confirm("Are you sure you want to Edit this detail?");
+      if (ask) {
+        window.location.href = url;
+
+      }
+   }
+</script>
+{% endblock %}
