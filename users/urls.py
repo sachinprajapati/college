@@ -16,5 +16,7 @@ urlpatterns = [
 	path('PaymentInit/', PaymentInit, name="PaymentInit"),
 	path('PaymentReceipt/', PaymentReceipt, name="PaymentReceipt"),
 	path('PaymentConfirmation/', PaymentConfirmation, name="PaymentConfirmation"),
+	path('clcRegistration/', CLCRegistration.as_view(), name="clc_registration"),
+	path('clcCourse/', CLCCourse, name="clc_course")
 
 ]

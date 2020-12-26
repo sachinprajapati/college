@@ -34,17 +34,26 @@
             </a>
             <b class="arrow"></b>
             <ul class="submenu nav-show" style="display: block;">
-               <li class="active">
+               <li>
                   <a href="{% url 'college:student_basic' %}">
                   <i class="menu-icon fa fa-caret-right"></i>
                   Student Basic Info
                   </a>
                   <b class="arrow"></b>
                </li>
-               <li class="">
-                  <a href="jqgrid.html">
+               {% if first_year %}
+               <li>
+                  <a href="{% url 'college:student_education' %}">
                   <i class="menu-icon fa fa-caret-right"></i>
-                  jqGrid plugin
+                  Student Education Info
+                  </a>
+                  <b class="arrow"></b>
+               </li>
+               {% endif %}
+               <li>
+                  <a href="{% if request.user.profile.clc_status %}{% url 'college:clc_course' %}{% else %}{% url 'college:student_course' %}{% endif %}">
+                  <i class="menu-icon fa fa-caret-right"></i>
+                  Student Course Info
                   </a>
                   <b class="arrow"></b>
                </li>

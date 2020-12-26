@@ -1,3 +1,5 @@
+from datetime import date
+
 BOOLEAN_STATUS = [
 	("0", 'Inactive'),
 	("1", 'Active')
@@ -110,3 +112,11 @@ FeeHeads = [
 	(3, 'Second Year'),
 	(4, 'Third Year'),
 ]
+
+DIVISION_LIST = [
+	(1, 'First'),
+	(2, 'Second'),
+	(3, 'Third'),
+]
+
+MONTH_LIST = [(i, date(1900, i, 1).strftime('%B')) for i in range(1,13)]

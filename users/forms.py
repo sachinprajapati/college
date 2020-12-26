@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 
 from django.contrib.auth.models import User
 
-from .models import Profile, PreviousEducation, GENDER, CourseDetail
+from .models import *
 
 class DateInput(forms.DateInput):
     input_type = 'date'
@@ -27,7 +27,7 @@ class StudentForms(forms.ModelForm):
 
 	class Meta:
 		model = Profile
-		exclude = ('reg_no', 'dob', 'phone')
+		exclude = ('reg_no', 'dob', 'phone', 'clc_status')
 		widgets = {
             'dob': DateInput()
         }
@@ -107,3 +107,48 @@ class StudentCourseExist(forms.ModelForm):
 
 class SearchStudent(forms.Form):
 	username = forms.CharField()
+
+class PsubjectForm(forms.ModelForm):
+	subject = forms.ModelChoiceField(queryset = Subject.objects.filter(is_practical=True) )
+	class Meta:
+		model = practical
+		fields = '__all__'
+
+
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, Div, Row, Column, Field
+
+class CLCRegistrationForm(forms.ModelForm):
+	# academic_session = forms.ModelChoiceField(queryset=CLCYear.objects.all())
+	first_name = forms.CharField()
+	last_name = forms.CharField()
+	board_roll_no = forms.IntegerField()
+	course = forms.ModelChoiceField(queryset=Courses.objects.all())
+
+	class Meta:
+		model = Profile
+		fields = ('phone', 'dob')
+		widgets = {
+            'dob': DateInput()
+        }
+
+	def save(self, commit=True):
+		m = super(CLCRegistrationForm, self).save(commit=False)
+		data = self.cleaned_data
+		m.reg_no = data['board_roll_no']
+		pwd = ''.join(str(data['dob']).split('-'))
+		u = User(username=data['board_roll_no'], first_name=data['first_name'], last_name=data['last_name'], \
+			)
+		u.set_password(pwd)
+		u.save()
+		m.user = u
+		m.clc_status = True
+		if commit:
+			m.save()
+		return m
+
+
+class CLCCourseForm(forms.ModelForm):
+	class Meta:
+		model = CLCStudent
+		exclude = ('profile', 'cls_roll')

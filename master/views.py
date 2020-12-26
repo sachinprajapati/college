@@ -6,9 +6,10 @@ from django.views.generic.base import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 
 from django.utils.decorators import method_decorator
-from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import redirect, HttpResponseRedirect, get_object_or_404
 
 from django.urls import reverse_lazy
@@ -136,6 +137,45 @@ class UpdateSubject(UpdateView):
 		context['list_id'] = 'add_subject'
 		return context
 
+
+@method_decorator(staff_member_required, name='dispatch')
+class AddPSubject(CreateView):
+	form_class = PsubjectForm
+	model = practical
+	template_name = 'registration/create_form.html'
+	success_url = reverse_lazy('master:add_psubject')
+
+	def get_table_template(self):
+		return "registration/"+self.model.__name__.lower()+"_table.html"
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['object_list'] = self.model.objects.all()
+		context['title'] = 'Add Practical Subject'
+		context['list_title'] = 'Practical  Subject List'
+		context['table_template'] = self.get_table_template()
+		context['list_id'] = 'add_psubject'
+		return context
+
+@method_decorator(staff_member_required, name="dispatch")
+class UpdatePSubject(UpdateView):
+	model = practical
+	form_class = PsubjectForm
+	template_name = 'registration/create_form.html'
+	success_url = reverse_lazy('master:add_psubject')
+
+	def get_table_template(self):
+		return "registration/"+self.model.__name__.lower()+"_table.html"
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['object_list'] = self.model.objects.filter().exclude(pk=self.kwargs['pk'])
+		context['title'] = 'Add Practical Subject'
+		context['list_title'] = 'Practical Subject List'
+		context['table_template'] = self.get_table_template()
+		context['list_id'] = 'add_psubject'
+		return context
+
 @method_decorator(staff_member_required, name='dispatch')
 class AddSession(CreateView):
 	model = Session
@@ -214,11 +254,13 @@ class UpdateComposition(UpdateView):
 
 
 @method_decorator(staff_member_required, name='dispatch')
-class AddFee(CreateView):
+class AddFee(SuccessMessageMixin, CreateView):
 	model = FeeMaster
-	fields = '__all__'
-	template_name = 'registration/create_form.html'
+	# fields = '__all__'
+	form_class = AddFeeForm
+	template_name = 'master/add_fee.html'
 	success_url = reverse_lazy('master:add_fee')
+	success_message = 'Course :- %(course)s, Feehead :- %(feehead)s, Gender :- %(gender)s, Board :- %(board)s Fee successfully added for all category'
 
 	def get_table_template(self):
 		return "registration/"+self.model.__name__.lower()+"_table.html"
@@ -233,11 +275,12 @@ class AddFee(CreateView):
 		return context
 
 @method_decorator(staff_member_required, name="dispatch")
-class UpdateFee(UpdateView):
+class UpdateFee(SuccessMessageMixin, UpdateView):
 	model = FeeMaster
-	fields = '__all__'
+	form_class = UpdateFeeForm
 	template_name = 'registration/create_form.html'
 	success_url = reverse_lazy('master:add_fee')
+	success_message = 'Fee Structure Successfully Updated'
 
 	def get_table_template(self):
 		return "registration/"+self.model.__name__.lower()+"_table.html"

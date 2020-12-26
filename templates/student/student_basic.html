@@ -106,8 +106,6 @@
                 <div id="ContentPlaceHolder1_pnlstudent">
 	
                     <div class="row">
-                        <div class="col-xs-12">
-                            <div class="row">
                                 <div class="col-sm-12">
                                     <div class="tabbable">
                                     <form action="" method="post" enctype="multipart/form-data">
@@ -119,8 +117,10 @@
                                                 <!-- Nav tabs -->
                                                 <ul class="nav nav-tabs">
                                                     <li class="active"><a href="#"><i class="green ace-icon fa fa-user-md bigger-120"></i>Student Basic Profile Information</a></li>
+                                                    {% if first_year %}
                                                     <li><a href="{% url 'college:student_education' %}"><i class="green ace-icon fa fa-university bigger-120"></i>Student Previous Education Details</a></li>
-                                                    <li><a href="{% url 'college:student_course' %}"><i class="green ace-icon fa fa-book bigger-120"></i>Student Academic Course</a></li>
+                                                    {% endif %}
+                                                    <li><a href="{% if request.user.profile.clc_status %}{% url 'college:clc_course' %}{% else %}{% url 'college:student_course' %}{% endif %}"><i class="green ace-icon fa fa-book bigger-120"></i>Student Academic Course</a></li>
                                                 </ul>
                                             </div>
                                             </div>
@@ -327,6 +327,7 @@
                                                     </div>
                                                 </div>
                                                 <hr>
+                                                {% if first_year %}
                                                 <div class="row" style="padding-top: 10px;">
                                                     <div class="col-lg-6" style="padding-left: 25px;">
                                                         <div class="row">
@@ -388,6 +389,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                {% endif %}
                                                 <hr>
                                                 {% if form.errors %}
                                                 	{{ form.errors }}
@@ -408,12 +410,6 @@
 									</form>
                                     </div>
                                 </div>
-                                <!-- /.col -->
-                            </div>
-                            <!-- /.row -->
-
-                            <!-- PAGE CONTENT ENDS -->
-                        </div>
                         <!-- /.col -->
                     </div>
                     <!-- /.row -->

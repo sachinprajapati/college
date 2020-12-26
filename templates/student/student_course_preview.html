@@ -104,8 +104,10 @@
                                             </div>
                                             <div class="col-sm-4">
                                                 <span id="ContentPlaceHolder1_lblmobileno">{{ user.profile.phone }}</span>
+                                                {% if user.profile.whatsapp %}
                                                 &nbsp;&nbsp;&nbsp;|| &nbsp;&nbsp;&nbsp;
-                                                <span id="ContentPlaceHolder1_lblwhatsappno">9999999999</span>
+                                                <span id="ContentPlaceHolder1_lblwhatsappno">{{ user.profile.whatsapp }}</span>
+                                                {% endif %}
                                             </div>
                                             <div class="col-sm-2">
                                                 <b>E-Mail ID</b>
@@ -123,31 +125,42 @@
                                             </div>
                                         </div>
                                         <div class="row" style="padding-top: 5px;">
-                                            <div class="col-sm-2">
-                                                <b>Course Name</b>
-                                            </div>
-                                            <div class="col-sm-2">
-                                                <span id="ContentPlaceHolder1_lblcoursename">{{ user.profile.coursedetail.course }}</span>
-                                            </div>
+                                            {% if not user.profile.clc_status %}
+                                                <div class="col-sm-2">
+                                                    <b>Course Name</b>
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <span id="ContentPlaceHolder1_lblcoursename">{{ user.profile.coursedetail.course }}</span>
+                                                </div>
+                                            {% else %}
+                                                <div class="col-sm-2">
+                                                    <b>Registered for</b>
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <span id="ContentPlaceHolder1_lblcoursename">CLC</span>
+                                                </div>
+                                            {% endif %}
                                             <div class="col-sm-2">
                                                 <b>Academic Session</b>
                                             </div>
                                             <div class="col-sm-2">
                                                 <span id="ContentPlaceHolder1_lblaccsession">{{ user.profile.coursedetail.last_session }}</span>
                                             </div>
-                                            <div class="col-sm-2">
-                                                <b>Payment For</b>
-                                            </div>
-                                            <div class="col-sm-2">
-                                                <span id="ContentPlaceHolder1_lblpaymentfor">
-                                                {% for f in fm %}
-                                                    <strong>{{f.feehead|title}}</strong>{% if not forloop.last %}{% ifequal forloop.revcounter 2 %} and {% else %}, {% endifequal %}{% else %}{% endif %}
-                                                {% endfor %}
-                                                </span>
-                                            </div>
+                                            {% if not user.profile.clc_status %}
+                                                <div class="col-sm-2">
+                                                    <b>Payment For</b>
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <span id="ContentPlaceHolder1_lblpaymentfor">
+                                                    {% for f in fm %}
+                                                        <strong>{{f.get_feehead_display|title}}</strong>{% if not forloop.last %}{% ifequal forloop.revcounter 2 %} and {% else %}, {% endifequal %}{% else %}{% endif %}
+                                                    {% endfor %}
+                                                    </span>
+                                                </div>
+                                            {% endif %}
                                         </div><br/>
-                                        {% if practical %}
-                                        <div class="row">                                                
+                                        <div class="row">
+                                        {% if practical %}                                                
                                             <div class="col-sm-2">
                                                 <b>Practical Exam Payment</b>
                                             </div>
@@ -158,8 +171,8 @@
                                                 {% endfor %}
                                                 </span>
                                             </div>
-                                        </div>
                                         {% endif %}
+                                        </div>
                                         <br>
                                         <div class="row" style="padding-top: 5px;">
                                             <div class="col-sm-2">

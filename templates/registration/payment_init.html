@@ -16,10 +16,10 @@ function submitForm() {
 		<input type="hidden" name="amount" value="{{ fee }}" />
 		<input type="hidden" name="currency" value="356" />
 		<input type="hidden" name="isocurrency" value="INR" />
-		<input type="hidden" name="customvar" value="{% for f in fm %}{{f.feehead|title}}{% if not forloop.last %}{% ifequal forloop.revcounter 2 %} and {% else %}, {% endifequal %}{% else %}{% endif %}{% endfor %} & {% for p in practical %}{{p|title}}{% if not forloop.last %}{% ifequal forloop.revcounter 2 %} and {% else %}, {% endifequal %}{% else %}{% endif %}{% endfor %}, ,=" />
+		<input type="hidden" name="customvar" value="{% for f in fm %}{{f.feehead|title}}{% if not forloop.last %}{% ifequal forloop.revcounter 2 %} and {% else %}, {% endifequal %}{% else %}{% endif %}{% endfor %} & {% for p in practical %}{{p|title}}{% if not forloop.last %}{% ifequal forloop.revcounter 2 %} and {% else %}, {% endifequal %}{% else %}{% endif %}{% endfor %}" />
 		<input type="hidden" name="orderid" value="order1" />
 		<input type="hidden" name="privatekey" value="{{ privatekey }}" />
-		<input type="hidden" name="mercid" value="24516" />
+		<input type="hidden" name="mercid" value="30219" />
 		<input type="hidden" name="checksum" value="{{ checksum }}" />
 		<input type="hidden" name="chmod" value="" />
 		<input type="hidden" name="buyerPhone" value="" />

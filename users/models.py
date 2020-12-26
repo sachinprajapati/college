@@ -53,7 +53,7 @@ class Profile(models.Model):
 	adhar = models.PositiveIntegerField(validators=[adhar_regex], null=True, blank=True)
 	phone_regex = RegexValidator(regex=r'^(\+\d{1,3})?,?\s?\d{10}', message="Phone number must be entered in the format: '+999999999'. Up to 10 digits allowed.")
 	phone = models.DecimalField(validators=[phone_regex], max_digits=10, decimal_places=0)
-	whatsapp = models.DecimalField(validators=[phone_regex], max_digits=10, decimal_places=0, null=True)
+	whatsapp = models.DecimalField(validators=[phone_regex], max_digits=10, decimal_places=0, null=True, blank=True)
 	address = models.TextField(null=True)
 	state = models.PositiveSmallIntegerField(choices=STATE, null=True)
 	city = models.CharField(max_length=255, null=True)
@@ -72,7 +72,8 @@ class Profile(models.Model):
 	migration = models.ImageField(upload_to=migration_directory, null=True, blank=True, verbose_name="Migration Certificate", storage=OverwriteStorage())
 	cota = models.ImageField(upload_to=cota_directory, null=True, blank=True, verbose_name="SPECIAL COTA DOCUMENT", storage=OverwriteStorage())
 	status = models.BooleanField(default=False)
-	merit = models.PositiveIntegerField(choices=MERIT_LIST_CHOICES, null=True)
+	merit = models.PositiveIntegerField(choices=MERIT_LIST_CHOICES, null=True, blank=True)
+	clc_status = models.BooleanField(default=False)
 
 
 class Board(models.Model):
@@ -167,6 +168,14 @@ class FeeMaster(models.Model):
 	board = models.ForeignKey(Board, on_delete=models.CASCADE)
 	amount = models.PositiveIntegerField()
 
+	class Meta:
+	    constraints = [
+	        models.UniqueConstraint(fields=['course', 'feehead', 'gender', 'board', 'amount'], name='Fee Structure already exist')
+	    ]
+
+	def get_absolute_url(self):
+		return reverse_lazy('master:update_fee', args=[str(self.id)])
+
 
 PASSOUT_YEAR = [(year%100, year) for year in range(date.today().year, 1984, -1)]
 
@@ -217,6 +226,9 @@ class practical(models.Model):
 	subject = models.OneToOneField(Subject, on_delete=models.CASCADE)
 	amount = models.PositiveIntegerField()
 
+	def get_absolute_url(self):
+		return reverse_lazy('master:update_psubject', args=[str(self.id)])
+
 
 class Response(models.Model):
 	text = models.TextField()
@@ -228,3 +240,22 @@ def excel_file(instance, filename):
 class BulkRecord(models.Model):
 	file = models.FileField(upload_to=excel_file)
 	dt = models.DateTimeField(auto_now_add=True)
+
+class CLCYear(models.Model):
+	name = models.CharField(max_length=9)
+
+	def __str__(self):
+		return self.name
+
+class CLCStudent(models.Model):
+	profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
+	exm_roll = models.PositiveIntegerField(verbose_name="Exam Roll. No.")
+	cls_roll = models.PositiveIntegerField(verbose_name="Class Roll. No.")
+	session = models.ForeignKey(CLCYear, on_delete=models.CASCADE)
+	course = models.ForeignKey(Courses, on_delete=models.CASCADE, verbose_name="Course Name")
+	exm_year = models.PositiveIntegerField(choices=PASSOUT_YEAR, verbose_name="Examination Year")
+	pass_year = models.PositiveIntegerField(choices=PASSOUT_YEAR, verbose_name="Passing Year")
+	total_marks = models.PositiveSmallIntegerField()
+	obtained_marks = models.PositiveSmallIntegerField()
+	division = models.PositiveSmallIntegerField(choices=DIVISION_LIST, verbose_name="Passing Division")
+	exm_month = models.PositiveSmallIntegerField(choices=MONTH_LIST, verbose_name="Examination Month")

@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 from django.db import connection
 
 from users.models import *
+from users.choices import *
 
 import pandas as pd
 
@@ -65,6 +66,7 @@ database_url = 'postgresql://{user}:{password}@{localhost}:5432/{database_name}'
     localhost=host,
     database_name=database_name,
 )
+
 from sqlalchemy import create_engine
 from django.db import IntegrityError, transaction
 
@@ -114,6 +116,7 @@ class AddBulkStudent(forms.ModelForm):
 				alluser = pd.read_sql("select id as user_id, username from {}".format(User.objects.model._meta.db_table), engine, index_col='username')
 				s2 = pd.merge(alluser, profile, how='inner', on=['username'])
 				s2.index.names = ['reg_no']
+				s2['clc_status'] = False
 				s2.to_sql(Profile.objects.model._meta.db_table, engine, if_exists='append')
 				pf = pd.read_sql("select id as profile_id, reg_no from {}".format(Profile.objects.model._meta.db_table), engine, index_col='reg_no')
 				pf1 = pd.merge(pf, s2, how='inner', on=['reg_no'])
@@ -125,3 +128,31 @@ class AddBulkStudent(forms.ModelForm):
 		except Exception as e:
 			raise ValidationError(e)
 		return data
+
+
+class AddFeeForm(forms.ModelForm):
+
+	def __init__(self, *args, **kwargs):
+		super(AddFeeForm, self).__init__(*args, **kwargs)
+		for i in CATEGORY:
+			self.fields[i[1]] = forms.IntegerField()
+
+	class Meta:
+		model = FeeMaster
+		fields = '__all__'
+		exclude = ('status', 'category', 'amount')
+
+	def save(self, commit=True):
+		m = super(AddFeeForm, self).save(commit=False)
+		data = self.cleaned_data
+		for i in CATEGORY:
+			fm = FeeMaster(course=data['course'], feehead=data['feehead'], gender=data['gender'], board=data['board'], \
+			category=i[0], amount=data[i[1]], status="1")
+			fm.save()
+		return m
+
+class UpdateFeeForm(forms.ModelForm):
+	class Meta:
+		model = FeeMaster
+		fields = '__all__'
+		exclude = ('status', )

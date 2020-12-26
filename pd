@@ -6,3 +6,5 @@ first_name = df['Student Name'].str.split().str[:-1].str.join(' ')
 last_name = df['Student Name'].str.split().str[-1]
 
 Model.objects.model._meta.db_table
+
+18D734726

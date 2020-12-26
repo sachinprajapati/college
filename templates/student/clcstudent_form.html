@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
 
 {% block body-attr %}class="no-skin"{% endblock %}
 
@@ -48,9 +49,6 @@
                                                 <!-- Nav tabs -->
                                                 <ul class="nav nav-tabs">
                                                     <li><a href="{% url 'college:student_basic' %}"><i class="green ace-icon fa fa-user-md bigger-120"></i>Student Basic Profile Information</a></li>
-                                                    {% if first_year %}
-                                                    <li><a href="{% url 'college:student_education' %}"><i class="green ace-icon fa fa-university bigger-120"></i>Student Previous Education Details</a></li>
-                                                    {% endif %}
                                                     <li class="active"><a href="#"><i class="green ace-icon fa fa-book bigger-120"></i>Student Academic Course</a></li>
                                                 </ul>
                                             </div>
@@ -63,99 +61,9 @@
                                         <div class="tab-content">
                                                 <div id="ContentPlaceHolder1_pnldata" class="aspNetDisabled">
 			
-                                                    <div class="row">
-                                                        <div align="Left" class="col-lg-2" style="padding-left: 30px;">
-                                                            <b>Course Name</b>
-                                                        </div>
-                                                        <div align="center" class="col-lg-2">
-                                                            {{ form.course }}
-                                                            
-                                                        </div>
-                                                        <div align="Left" class="col-lg-2">
-                                                            <b>Academic Session</b>
-                                                        </div>
-                                                        <div align="center" class="col-lg-2">
-                                                            {{ form.last_session }}
-                                                        </div>
-                                                        <div align="Left" class="col-lg-2">
-                                                            <b>Enroll Session</b>
-                                                        </div>
-                                                        <div align="center" class="col-lg-2">
-                                                            {{ form.enroll_session }}
-                                                        </div>
-
-                                                    </div>
+                                                    {{ form|crispy }}
                                                 
-		</div>
-                                                <div class="row" style="padding-top: 5px;">
-                                                    <div align="Left" class="col-lg-2" style="padding-left: 30px;">
-                                                        <b>12'th Marksheet No</b>
-                                                    </div>
-                                                    <div align="center" class="col-lg-2">
-                                                        {{ form.inter_marks }}
-                                                    </div>
-                                                    <div align="Left" class="col-lg-2">
-                                                        <b>12'th Roll Code</b>
-                                                    </div>
-                                                    <div align="center" class="col-lg-2">
-                                                        {{ form.inter_roll_code }}
-                                                    </div>
-                                                    <div align="Left" class="col-lg-2">
-                                                        <b>12'th Roll No</b>
-                                                    </div>
-                                                    <div align="center" class="col-lg-2">
-                                                        {{ form.inter_roll_no }}
-                                                    </div>
-                                                </div>
-                                                <div id="ContentPlaceHolder1_pnlcoursedata">
-			
-                                                    <hr>
-                                                    
-                                                    <div class="row" style="padding-top: 5px;">
-                                                        <div align="Left" class="col-lg-2" style="padding-left: 30px;">
-                                                            <b>
-                                                                <span id="ContentPlaceHolder1_lblpaper1">Honours Paper Name</span>
-                                                            </b>
-                                                        </div>
-                                                        <div align="center" class="col-lg-3">
-                                                        	<!-- <select class="form-control" name="hons_paper" required="" id="id_hons_paper">
-                                                                
-                                                            </select> -->
-                                                            {{ form.hons_paper }}
-                                                        </div>
-                                                        <div align="Left" class="col-lg-2">
-                                                            <b>
-                                                                <span id="ContentPlaceHolder1_lblpaper2">Sub. Paper 1 Name</span></b>
-                                                        </div>
-                                                        <div align="center" class="col-lg-3">
-                                                        	<!-- <select name="sub1_paper" class="form-control" required="" id="id_sub1_paper">
-                                                            </select> -->
-                                                            {{ form.sub1_paper }}
-                                                        </div>
-
-                                                    </div>
-                                                    <div class="row" style="padding-top: 5px;">
-                                                        <div align="Left" class="col-lg-2" style="padding-left: 30px;">
-                                                            <b>
-                                                                <span id="ContentPlaceHolder1_lblpaper3">Sub. Paper 2 Name</span></b>
-                                                        </div>
-                                                        <div align="center" class="col-lg-3">
-                                                        	<!-- <select name="sub2_paper" class="form-control" required="" id="id_sub2_paper">
-                                                            </select> -->
-                                                            {{ form.sub2_paper }}
-                                                        </div>
-                                                        <div align="Left" class="col-lg-2">
-                                                            <b>
-                                                                <span id="ContentPlaceHolder1_lblcompositionpaper"> Composition Paper</span></b>
-
-                                                        </div>
-                                                        <div align="center" class="col-lg-3">
-                                                        {{ form.comp_paper }}
-                                                        </div>
-                                                        
-                                                    </div>
-                                                
-		</div>
+		                                        </div>
                                                 <hr>
                                                 {% include 'registration/form-errors.html' %}
                                                 <div class="row">
