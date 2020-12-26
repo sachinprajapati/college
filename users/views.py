@@ -107,7 +107,26 @@ def getSubjects(request):
 		d[i.pk] = i.name
 	return JsonResponse(d)
 
+def StudentDetailCheck(function):
+    def wrapper(request, *args, **kw):
+        user=request.user  
+        # if StudentFee.objects.filter(profile=user.profile, feehead=2).exists():
+        # 	if not hasattr(user.profile, 'coursedetail')
+        #     	return HttpResponseRedirect(reverse_lazy('college:college_dashboard'))
+        if not hasattr(user, 'profile'):
+        	return HttpResponseRedirect(reverse_lazy('college:college_dashboard'))
+        elif user.profile.clc_status:
+        	if not hasattr(user.profile, 'clcstudent'):
+        		return HttpResponseRedirect(reverse_lazy('college:college_dashboard'))
+        elif not user.profile.clc_status:
+        	if not hasattr(user.profile, 'coursedetail'):
+        		return HttpResponseRedirect(reverse_lazy('college:college_dashboard'))
+        else:
+            return function(request, *args, **kw)
+    return wrapper
 
+
+@method_decorator(StudentDetailCheck, name="dispatch")
 class StudentDetailsPreview(LoginRequiredMixin, TemplateView):
 	models = Profile
 	template_name = "student/student_course_preview.html"
@@ -142,6 +161,7 @@ from pythonkit.checksum import Checksum
 chk = Checksum()
 
 @login_required
+@StudentDetailCheck
 def PaymentInit(request):
 	profile = request.user.profile
 	print(profile.reg_no)
