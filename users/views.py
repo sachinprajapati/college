@@ -202,10 +202,10 @@ def Register(request):
 	if request.method == 'POST':
 		try:
 			user = User.objects.get(username=request.POST['username'])
-			if not user.profile.status:
-				return JsonResponse({'message': 'Your profile not verify, please contact'})
 			if user.is_active:
-				return JsonResponse({'message': 'you are already registered please login'})
+				return JsonResponse({'message': 'you are already registered please login', 'exist': True})
+			if not request.POST.get('dob'):
+				return JsonResponse({'name': user.get_full_name(), 'phone': user.profile.phone, 'status': user.profile.status})
 			else:
 				dob = request.POST['dob'].split('-')
 				user.profile.dob = date(int(dob[0]), int(dob[1]), int(dob[2]))
@@ -214,10 +214,10 @@ def Register(request):
 				user.set_password(dob)
 				user.is_active = True
 				user.save()
-				return JsonResponse({'status': True, 'message': '{} your are successfully registered, please login your username is {} and password {}'.format(user.get_full_name(), user.username, dob)
-					})
+				return JsonResponse({'status': True, 'name': user.get_full_name(), 'phone': user.profile.phone, 'status': user.profile.status, 'verify': True, 'message': 'you are successfully registered, login with username {} and password {}'.format(user.username, dob)})
 		except Exception as e:
-			return JsonResponse({'message': 'No Record Found'})
+			print(e)
+			return JsonResponse({'message': str(e), 'error': True})
 	return render(request, 'registration/register.html', {})
 
 class CLCRegistration(CreateView):

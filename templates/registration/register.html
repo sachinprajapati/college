@@ -7,8 +7,8 @@
 		<div class="main-container">
 			<div class="main-content">
 				<div class="row">
-					<div class="col-sm-10 col-sm-offset-4">
-						<div class="col-md-5">
+					<div class="col-sm-12 col-sm-offset-3">
+						<div class="col-md-6">
 							<div class="center">
 								<h1>
 									<i class="ace-icon fa fa-leaf green"></i>
@@ -41,12 +41,36 @@
 															<i class="ace-icon fa fa-user"></i>
 														</span>
 													</label>
-
-													<label class="block clearfix">
-														<span class="block">
-															<input type="date" class="form-control" name="dob" placeholder="Date of Birth" required="" />
-														</span>
-													</label>
+													<div id="hidden-detail" style="display:none;">
+														<div class="row">
+															<div class="col-md-6">
+																<div class="form-group">
+																	<label>Full Name</label>
+																	<input type="text" name="name" id="id_fullname" class="form-control" disabled="">
+																</div>
+															</div>
+															<div class="col-md-6">
+																<div class="form-group">
+																	<label>phone</label>
+																	<input type="text" name="name" id="id_phone" class="form-control" disabled="">
+																</div>
+															</div>
+														</div>
+														<div class="row">
+															<div class="col-md-6">
+																<div class="form-group">
+																	<label>Admin Verify Status</label>
+																	<input type="text" name="name" id="id_status" class="form-control" disabled="">
+																</div>
+															</div>
+															<div class="col-md-6">
+																<div class="form-group" id="id_dob" style="display:none;">
+																	<label>Date of Birth</label>
+																	<input type="date" name="dob" id="" class="form-control">
+																</div>
+															</div>
+														</div>
+													</div>
 
 													<div class="space"></div>
 													<div class="form-error" style="display:none;"></div>
@@ -113,6 +137,7 @@ $(document).ready(function(){
     $myForm.submit(function(event){
         event.preventDefault()
         $('.form-error').css('display','none');
+        $('#hidden-detail').css('display','none');
         var $formData = $(this).serialize()
         var $thisURL = $myForm.attr('data-url') || window.location.href // or set your own url
         $.ajax({
@@ -129,14 +154,29 @@ $(document).ready(function(){
         console.log(textStatus)
         console.log(jqXHR)
         //$myForm.reset(); // reset form data
-        $('.form-error').css('display','block');
-        if(data['status']){
-        	var cs = 'alert alert-success'
-        }else{
-        	var cs = 'alert alert-danger'
-        }
-        $('.form-error').addClass(cs);
-        $('.form-error').text(data['message']);
+        console.log(data);
+        if(data['error'] | data['exist']){
+	        $('.form-error').css('display','block');
+	        $('.form-error').addClass('alert alert-danger');
+	        $('.form-error').text(data['message']);
+	    }else{
+	    	$("#hidden-detail").css('display', 'block');
+	    	$("#id_fullname").val(data['name']);
+	    	$("#id_phone").val(data['phone']);
+	    	if(data['status']){
+	    		var stud_status = 'verified'
+	    		$("#id_dob").css('display', 'block');
+	    		$("#id_status").val(stud_status);
+	    		if(data['verify']){
+	    			$('.form-error').css('display','block');
+			        $('.form-error').addClass('alert alert-success');
+			        $('.form-error').text(data['message']);
+	    		}
+	    	}else{
+	    		var stud_status = 'Not verified'
+	    		$("#id_status").val(stud_status);
+	    	}
+	    }
     }
 
     function handleFormError(jqXHR, textStatus, errorThrown){
