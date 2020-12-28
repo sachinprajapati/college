@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Sum
 from django.core.validators import RegexValidator
 from django.contrib.auth.models import User
 from datetime import date
@@ -75,6 +76,23 @@ class Profile(models.Model):
 	merit = models.PositiveIntegerField(choices=MERIT_LIST_CHOICES, null=True, blank=True)
 	clc_status = models.BooleanField(default=False)
 
+	def getCourseTotal(self):
+		fm = FeeMaster.objects.filter(course=self.coursedetail.course,\
+						feehead__in=(p.feehead for p in self.studentfee_set.all()),
+						gender=self.gender,
+						category=self.category,
+						status=1,
+						board=self.coursedetail.course.college.board).aggregate(Sum('amount'))['amount__sum']
+		return fm if fm else 0
+
+	def getPTotal(self):
+		return sum([i.practical.amount for i in self.coursedetail.get_Practical()]) if \
+								self.coursedetail.get_Practical() else 0
+
+	def getTotalFee(self):
+		print(type(self.getCourseTotal()), type(self.getPTotal()))
+		return self.getCourseTotal()+self.getPTotal()
+
 
 class Board(models.Model):
 	name = models.CharField(max_length=255, verbose_name="Board Name", unique=True)
@@ -101,9 +119,6 @@ class College(models.Model):
 
 	def __str__(self):
 		return '{}'.format(self.name)
-
-	def get_absolute_url(self):
-		return 
 
 
 class Courses(models.Model):
@@ -170,7 +185,7 @@ class FeeMaster(models.Model):
 
 	class Meta:
 	    constraints = [
-	        models.UniqueConstraint(fields=['course', 'feehead', 'gender', 'board', 'amount'], name='Fee Structure already exist')
+	        models.UniqueConstraint(fields=['course', 'feehead', 'gender', 'board'], name='Fee Structure already exist')
 	    ]
 
 	def get_absolute_url(self):

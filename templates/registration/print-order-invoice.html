@@ -16,13 +16,13 @@
                     <div style="margin:10px;border:2px solid black;">
                     
                     <div class="col-md-12">
-                        <div style="width:100px;height:100px;float:left;margin:5px;">
-                            <img src="<?php echo FRONT_MEDIA_URL; ?>img/ANC_LOGO.jpg">
+                        <div>
+                            <img src="{{ user.profile.coursedetail.course.college.logo.url }}" style="width:100px;height:100px;float:left;margin:5px;">
                         </div>
                         <div style="text-align:center;margin-right:50px;">
-                            <h1 style="margin-top:0px">ANUGRAH NARAYAN COLLEGE, PATNA</h1>
+                            <h1 style="margin-top:0px">{{ user.profile.coursedetail.course.college.board.name }}</h1>
                             <span>(A Constituent Unit of Patliputra University, Patna)<br>
-                            Boring Road, Srikrishnapuri Patna – 800013<br></span>
+                            {{ user.profile.coursedetail.course.college.address }}<br></span>
                             <span style="font-size:10px;">Website: https://www.ancpatna.ac.in, Phone: 0612 2540482</span>
                         </div>
                         <!--<div style="border:1px solid black; width:50px;height:50px;">
@@ -51,7 +51,7 @@
                                 <td style="width:20%;font-weight:600">Applied For Stream: </td>
                                 <td style="width:30%;font-weight:600">{{ user.profile.coursedetail.course }}</td>
                                 <td style="width:20%;font-weight:600">Board Name: </td>
-                                <td style="width:30%;font-weight:600">{{ user.profile.coursedetail.}}</td>
+                                <td style="width:30%;font-weight:600">{{ user.profile.coursedetail.course.college.board.name }}</td>
                             </tr>
                             <tr>
                                 <td style="width:20%;font-weight:600">Intermediate Registration Id: </td>
@@ -75,8 +75,16 @@
                             </tr>
                             <tr>
                                 <th style="width:10%;">1</th>
-                                <th style="width:60%;">Admission + Examination Fee</th>
-                                <th style="width:30%;"><?php echo $aUserOrder[0]->grand_total; ?></th>
+                                <th style="width:60%;">
+                                    {% for f in user.profile.studentfee_set.all %}
+                                        <strong>{{f.get_feehead_display|title}}</strong>{% if not forloop.last %}{% ifequal forloop.revcounter 2 %} and {% else %}, {% endifequal %}{% else %}{% endif %}
+                                    {% endfor %}
+                                    &
+                                    {% for p in user.profile.coursedetail.get_Practical %}
+                                        <strong>{{p|title}}</strong>{% if not forloop.last %}{% ifequal forloop.revcounter 2 %} and {% else %}, {% endifequal %}{% else %}{% endif %}
+                                    {% endfor %}
+                                </th>
+                                <th style="width:30%;">{{ user.profile.getTotalFee }}</th>
                             </tr>
                             
                         </table>
@@ -88,20 +96,19 @@
                             <tr>
                                 <td style="width:20%;font-weight:600">Pay Mode: </td>
                                 <td style="width:30%;font-weight:600">Online</td>
-                                <td style="width:20%;font-weight:600">Date & Time of Payment: </td>
-                                <td style="width:30%;font-weight:600"><?php echo date("d-m-yy h:i A", $aUserOrder[0]->order_date); ?></td>
+                                <td style="width:20%;font-weight:600">Date & Time of Payment : </td>
+                                <td style="width:30%;font-weight:600">{% now "SHORT_DATETIME_FORMAT" %}
+</td>
                             </tr>
                             <tr>
-                                <td style="width:20%;font-weight:600">Bank Name: </td>
-                                <td style="width:30%;font-weight:600"><?php echo $aUserOrder[0]->bank_name; ?></td>
                                 <td style="width:20%;font-weight:600">Payment Id: </td>
-                                <td style="width:30%;font-weight:600"><?php echo $aUserOrder[0]->uniq_order_id; ?></td>
+                                <td style="width:30%;font-weight:600">123</td>
                             </tr>
                             <tr>
                                 <td style="width:20%;font-weight:600">Total </td>
-                                <td style="width:30%;font-weight:600"><?php echo $aUserOrder[0]->grand_total; ?></td>
+                                <td style="width:30%;font-weight:600">{{ user.profile.getTotalFee }}</td>
                                 <td style="width:20%;font-weight:600">Transaction ID</td>
-                                <td style="width:30%;font-weight:600"><?php echo $aUserOrder[0]->airp_aptransaction_id; ?></td>
+                                <td style="width:30%;font-weight:600">2121</td>
                             </tr>
                             
                         </table>
@@ -126,30 +133,19 @@
             
             <br>
             <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <div class="row">
+            <hr/>
+            <div class="row" style="padding-bottom:50px;">
                 <div class="col-xs-12 col-md-12" style="margin-top:50px;">
                     <div style="margin:10px;border:2px solid black;">
                     
                     <div class="col-md-12">
-                        <div style="width:100px;height:100px;float:left;margin:5px;">
-                            <img src="<?php echo FRONT_MEDIA_URL; ?>img/ANC_LOGO.jpg">
+                        <div>
+                            <img src="{{ user.profile.coursedetail.course.college.logo.url }}" style="width:100px;height:100px;float:left;margin:5px;">
                         </div>
                         <div style="text-align:center;margin-right:50px;">
-                            <h1 style="margin-top:0px">ANUGRAH NARAYAN COLLEGE, PATNA</h1>
+                            <h1 style="margin-top:0px">{{ user.profile.coursedetail.course.college.name }}</h1>
                             <span>(A Constituent Unit of Patliputra University, Patna)<br>
-                            Boring Road, Srikrishnapuri Patna – 800013<br></span>
+                            {{ user.profile.coursedetail.course.college.address }}<br></span>
                             <span style="font-size:10px;">Website: https://www.ancpatna.ac.in, Phone: 0612 2540482</span>
                         </div>    
                     </div>
@@ -167,38 +163,25 @@
                             </tr>
                             <tr>
                                 <td style="width:20%;font-weight:600">Father Name: </td>
-                                <td style="width:30%;font-weight:600"><?php echo $aUserDetails[0]->father_name; ?></td>
+                                <td style="width:30%;font-weight:600">{{ user.profile.f_name }}</td>
                                 <td style="width:20%;font-weight:600">Mobile No: </td>
-                                <td style="width:30%;font-weight:600"><?php echo $aUserDetails[0]->mobile; ?></td>
+                                <td style="width:30%;font-weight:600">{{ user.profile.phone }}</td>
                             </tr>
                             <tr>
                                 <td style="width:20%;font-weight:600">Applied For Stream: </td>
-                                <td style="width:30%;font-weight:600"><?php echo $aUserDetails[0]->applied_for; ?></td>
+                                <td style="width:30%;font-weight:600">{{ user.profile.coursedetail.course }}</td>
                                 <td style="width:20%;font-weight:600">Board Name: </td>
-                                <td style="width:30%;font-weight:600"><?php echo $aUserFromDetails[0]->matric_board_name; ?></td>
+                                <td style="width:30%;font-weight:600">{{ user.profile.coursedetail.course.college.board.name }}</td>
                             </tr>
                             <tr>
                                 <td style="width:20%;font-weight:600">Intermediate Registration Id: </td>
-                                <td style="width:30%;font-weight:600"><?php echo $aUserDetails[0]->registration_id; ?></td>
+                                <td style="width:30%;font-weight:600">87687</td>
                                 <td style="width:20%;font-weight:600">Category: </td>
-                                <td style="width:30%;font-weight:600"><?php
-                                
-                                $aCatDetails = $this->caste_model->SelectRowsByID($aUserFromDetails[0]->caste);
-                                echo $aCatDetails[0]->title; ?></td>
+                                <td style="width:30%;font-weight:600">{{ user.profile.get_category_display }}</td>
                             </tr>
                         </table>
                     </div>
                     <div class="col-md-12">
-                        <table style="margin:20px;width:20%;float:left;">
-                            <tr>
-                                <td style="width:40%;"><img style="width:100px;height:100px;" src="<?php echo UP_URL.'student_photo/'.$aUserFromDetails[0]->student_photo; ?>"> </td>
-                                
-                            </tr>
-                            <tr>
-                                <td style="width:40%;height:50px;"><img style="width:100px;height:50px;" src="<?php echo UP_URL.'student_signature/'.$aUserFromDetails[0]->sesign; ?>"> </td>
-                                
-                            </tr>
-                        </table>
                         <table border=1 style="margin:20px;width:100%">
                             <tr>
                                 <th style="width:10%;font-weight:600">Sr No</th>
@@ -207,8 +190,16 @@
                             </tr>
                             <tr>
                                 <th style="width:10%;">1</th>
-                                <th style="width:60%;">Admission + Examination Fee</th>
-                                <th style="width:30%;"><?php echo $aUserOrder[0]->grand_total; ?></th>
+                                <th style="width:60%;">
+                                    {% for f in user.profile.studentfee_set.all %}
+                                        <strong>{{f.get_feehead_display|title}}</strong>{% if not forloop.last %}{% ifequal forloop.revcounter 2 %} and {% else %}, {% endifequal %}{% else %}{% endif %}
+                                    {% endfor %}
+                                    &
+                                    {% for p in user.profile.coursedetail.get_Practical %}
+                                        <strong>{{p|title}}</strong>{% if not forloop.last %}{% ifequal forloop.revcounter 2 %} and {% else %}, {% endifequal %}{% else %}{% endif %}
+                                    {% endfor %}
+                                </th>
+                                <th style="width:30%;">{{ user.profile.getTotalFee }}</th>
                             </tr>
                             
                         </table>
@@ -220,20 +211,18 @@
                             <tr>
                                 <td style="width:20%;font-weight:600">Pay Mode: </td>
                                 <td style="width:30%;font-weight:600">Online</td>
-                                <td style="width:20%;font-weight:600">Date & Time of Payment  </td>
-                                <td style="width:30%;font-weight:600"><?php echo date("d-m-yy h:i A", $aUserOrder[0]->order_date); ?></td>
+                                <td style="width:20%;font-weight:600">Date & Time of Payment : </td>
+                                <td style="width:30%;font-weight:600">{% now "SHORT_DATETIME_FORMAT" %}</td>
                             </tr>
                             <tr>
-                                <td style="width:20%;font-weight:600">Bank Name: </td>
-                                <td style="width:30%;font-weight:600"><?php echo $aUserOrder[0]->bank_name; ?></td>
                                 <td style="width:20%;font-weight:600">Payment Id: </td>
-                                <td style="width:30%;font-weight:600"><?php echo $aUserOrder[0]->uniq_order_id; ?></td>
+                                <td style="width:30%;font-weight:600">123</td>
                             </tr>
                             <tr>
                                 <td style="width:20%;font-weight:600">Total </td>
-                                <td style="width:30%;font-weight:600"><?php echo $aUserOrder[0]->grand_total; ?></td>
+                                <td style="width:30%;font-weight:600">{{ user.profile.getTotalFee }}</td>
                                 <td style="width:20%;font-weight:600">Transaction ID</td>
-                                <td style="width:30%;font-weight:600"><?php echo $aUserOrder[0]->airp_aptransaction_id; ?></td>
+                                <td style="width:30%;font-weight:600">6757</td>
                             </tr>
                             
                         </table>

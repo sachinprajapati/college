@@ -108,22 +108,18 @@ def getSubjects(request):
 	return JsonResponse(d)
 
 def StudentDetailCheck(function):
-    def wrapper(request, *args, **kw):
-        user=request.user  
-        # if StudentFee.objects.filter(profile=user.profile, feehead=2).exists():
-        # 	if not hasattr(user.profile, 'coursedetail')
-        #     	return HttpResponseRedirect(reverse_lazy('college:college_dashboard'))
-        if not hasattr(user, 'profile'):
-        	return HttpResponseRedirect(reverse_lazy('college:college_dashboard'))
-        elif user.profile.clc_status:
-        	if not hasattr(user.profile, 'clcstudent'):
-        		return HttpResponseRedirect(reverse_lazy('college:college_dashboard'))
-        elif not user.profile.clc_status:
-        	if not hasattr(user.profile, 'coursedetail'):
-        		return HttpResponseRedirect(reverse_lazy('college:college_dashboard'))
-        else:
-            return function(request, *args, **kw)
-    return wrapper
+	def wrapper(request, *args, **kw):
+		user=request.user
+		if not hasattr(user, 'profile'):
+			return HttpResponseRedirect(reverse_lazy('college:college_dashboard'))
+		elif user.profile.clc_status:
+			if not hasattr(user.profile, 'clcstudent'):
+				return HttpResponseRedirect(reverse_lazy('college:college_dashboard'))
+		elif not user.profile.clc_status:
+			if not hasattr(user.profile, 'coursedetail'):
+				return HttpResponseRedirect(reverse_lazy('college:college_dashboard'))
+		return function(request, *args, **kw)
+	return wrapper
 
 
 @method_decorator(StudentDetailCheck, name="dispatch")
@@ -134,24 +130,7 @@ class StudentDetailsPreview(LoginRequiredMixin, TemplateView):
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		profile = self.request.user.profile
-		if not hasattr(profile, 'clcstudent'):
-			st = (p.feehead for p in profile.studentfee_set.all())
-			context['fm'] = FeeMaster.objects.filter(course=profile.coursedetail.hons_paper.course,\
-							feehead__in=st,
-							gender=profile.gender,
-							category=profile.category,
-							status=1,
-							board=profile.coursedetail.hons_paper.course.college.board,
-				)
-			print('context', context)
-			if profile.studentfee_set.all() and context['fm']:
-				context['fee'] = context['fm'].aggregate(Sum('amount'))['amount__sum']
-				context['fee'] += sum([i.practical.amount for i in profile.coursedetail.get_Practical()]) if \
-								profile.coursedetail.get_Practical() else 0
-				context['fee'] = '%.2f' % context['fee']
-				context['practical'] = [i.name for i in profile.coursedetail.get_Practical()]
-			else:
-				context['fee'] = 0
+		context['profile'] = profile
 		print(context)
 		return context
 
@@ -189,7 +168,8 @@ def PaymentInit(request):
 		raise Http404
 
 def PaymentReceipt(request):
-	return render(request, 'registration/print-order-invoice.html', {})
+	context = {}
+	return render(request, 'registration/print-order-invoice.html', context)
 
 def PaymentConfirmation(request):
 	if request.method == 'POST':

@@ -180,13 +180,13 @@
                                             <div align="center" class="col-sm-8">
                                                 
                                                 <b>Paid Amount :: </b>
-                                                <span id="ContentPlaceHolder1_lbltotalamount" style="color:DarkSlateBlue;font-size:Large;font-weight:bold;">{{ fee }}</span>
+                                                <span id="ContentPlaceHolder1_lbltotalamount" style="color:DarkSlateBlue;font-size:Large;font-weight:bold;">{{ profile.getTotalFee }}</span>
                                             </div>
                                             <div class="col-sm-2">
                                             </div>
                                         </div>
                                         <div class="hr hr8 hr-double hr-dotted"></div>
-                                        {% if fee %}
+                                        {% if profile.status %}
                                         <div class="row" style="padding-top: 5px;">
                                             <div align="center" class="col-sm-12">
                                                 <a href="{% url 'college:PaymentInit' %}">
