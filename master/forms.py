@@ -36,7 +36,7 @@ class AddStudentForm(forms.ModelForm):
 		m = super(AddStudentForm, self).save(commit=False)
 		# do custom stuff
 		u = User(first_name=self.cleaned_data['first_name'], last_name=self.cleaned_data['last_name'], \
-				username=self.cleaned_data['reg_no'], password=make_password(str(self.cleaned_data['dob']))
+				username=self.cleaned_data['reg_no'], password=make_password(str(self.cleaned_data['dob'])), is_active=False
 			)
 		if commit:
 			u.save()
