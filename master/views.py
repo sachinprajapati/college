@@ -2,6 +2,7 @@ from django.shortcuts import render
 
 from django.views.generic.edit import CreateView, UpdateView, FormView
 from django.views.generic.base import TemplateView
+from django.views.generic.list import ListView
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
@@ -17,9 +18,20 @@ from django.http import JsonResponse, Http404, HttpResponse
 
 from django.db.models import Sum
 
+import django_tables2 as tables
+from django_tables2.export.views import ExportMixin
+
+from django_filters import rest_framework as filters
+import django_filters
+from django_filters.views import FilterView
+from django_tables2.views import SingleTableMixin
+from college.settings import engine
+
 from users.models import *
 from users.forms import *
 from .forms import *
+from users.choices import PAYMENT_STATUS
+import csv
 
 @method_decorator(staff_member_required, name='dispatch')
 class AddBoard(CreateView):
@@ -389,3 +401,184 @@ class AddBulkStudent(SuccessMessageMixin, FormView):
 	template_name = 'master/profile_form.html'
 	success_url = reverse_lazy('master:add_bstudent')
 	success_message = 'Data successfully created'
+
+class PaidStudentFilter(filters.FilterSet):
+	profile__reg_no = django_filters.CharFilter(lookup_expr='contains')
+	amount__gt = django_filters.NumberFilter(field_name='amount', lookup_expr='gt')
+
+	class Meta:
+	    model = PaymentStatus
+	    fields = ('profile__reg_no', 'profile__phone', 'easepayid', 'profile__coursedetail__course')
+
+class PaidStudentTable(tables.Table):
+	class Meta:
+	    model = PaymentStatus
+	    template_name = "django_tables2/bootstrap.html"
+	    fields = ('profile.reg_no', 'profile.user.first_name', 'profile.f_name', 'profile.phone', \
+	    		'profile.coursedetail.course', 'easepayid', 'amount', 'created_at')
+	    attrs = {"class": "table table-bordered table-hover"}
+
+@method_decorator(staff_member_required, name="dispatch")
+class PaidStudentReport(ExportMixin, SingleTableMixin, FilterView):
+    table_class = PaidStudentTable
+    model = PaymentStatus
+    template_name = "master/paid.html"
+
+    filterset_class = PaidStudentFilter
+    queryset = model.objects.filter(status=1, profile__clc_status=False)
+
+    def get_context_data(self, **kwargs):
+    	context = super().get_context_data(**kwargs)
+    	context['CLC_False'] = True
+    	return context
+
+@staff_member_required
+def PaidReportDownload(request):
+	kwargs = request.GET.copy()
+	filters = {'profile__clc_status': False}
+	for i,j in kwargs.items():
+		if kwargs[i]:
+			filters[i] = j
+	filters.pop('page', None)
+	print(filters)
+	ren = {'f_name': 'Father Name', 'm_name': 'Mother Name'}
+	data = pd.read_sql("""SELECT reg_no, CONCAT(first_name, ' ', last_name) as full_name, email, f_name, m_name, 
+				gender, dob, m_status, adhar, phone, 
+				whatsapp, address, state, city, district, pincode, religion, 
+				category, g_occupation, g_income, phy_disabled, merit,
+				last_session, inter_marks, inter_roll_code, inter_roll_no, 
+				comp_paper_id, course_id, enroll_session_id, hons_paper_id, 
+				sub1_paper_id, sub2_paper_id, amount, easepayid, TO_CHAR(created_at, 'DD/MM/YYYY HH:MI am') as Payment_At
+				FROM public.users_profile as pf inner join users_coursedetail as cd on pf.id=cd.profile_id
+				inner join users_paymentstatus as ps on ps.profile_id=pf.id
+				inner join auth_user as users on pf.user_id=users.id
+				where ps.status=1;""", engine, index_col="reg_no")
+	response = HttpResponse(content_type='text/csv')
+	response['Content-Disposition'] = 'attachment; filename=filename.csv'
+	data['gender'] = data['gender'].map(dict((x, y) for x, y in GENDER))
+	data['religion'] = data['religion'].map(dict((x, y) for x, y in RELIGION_LIST))
+	data['m_status'] = data['m_status'].map(dict((x, y) for x, y in MARITAL_STATUS))
+	data['category'] = data['category'].map(dict((x, y) for x, y in CATEGORY))
+	data['phy_disabled'] = data['phy_disabled'].map(dict((x, y) for x, y in DISABLED))
+	data['merit'] = data['merit'].map(dict((x, y) for x, y in MERIT_LIST_CHOICES))
+	sub = {i.pk:i.name for i in Subject.objects.all()}
+	comp = {i.pk:i.sub.name for i in Composition.objects.all()}
+	session = {i.pk:i.name for i in Session.objects.all()}
+	data['hons_paper_id'] = data['hons_paper_id'].map(sub)
+	data['sub1_paper_id'] = data['sub1_paper_id'].map(sub)
+	data['sub2_paper_id'] = data['sub2_paper_id'].map(sub)
+	data['comp_paper_id'] = data['comp_paper_id'].map(comp)
+	data['enroll_session_id'] = data['enroll_session_id'].map(session)
+	data['course_id'] = data['course_id'].map({i.pk:i.name for i in Courses.objects.all()})
+	data.rename(columns=ren, inplace=True)
+	d = {}
+	for i in data.columns:
+		if i.endswith('_id'):
+			d[i] = i[:-3]
+	data.rename(columns=d, inplace=True)
+	data.to_csv(path_or_buf=response,sep=';',float_format='%.2f')
+	return response
+
+class PaidCLCFilter(filters.FilterSet):
+	profile__reg_no = django_filters.CharFilter(lookup_expr='contains')
+	amount__gt = django_filters.NumberFilter(field_name='amount', lookup_expr='gt')
+
+	class Meta:
+	    model = PaymentStatus
+	    fields = ('profile__reg_no', 'easepayid', 'profile__clcstudent__course')
+
+class PaidCLCTable(tables.Table):
+	class Meta:
+	    model = PaymentStatus
+	    template_name = "django_tables2/bootstrap.html"
+	    fields = ('profile.reg_no', 'profile.user.first_name', 'profile.f_name', 'profile.phone', \
+	    		'profile.clcstudent.course', 'easepayid', 'amount', 'created_at')
+	    attrs = {"class": "table table-bordered table-hover"}
+
+@method_decorator(staff_member_required, name="dispatch")
+class PaidCLCReport(ExportMixin, SingleTableMixin, FilterView):
+    table_class = PaidCLCTable
+    model = PaymentStatus
+    template_name = "master/paid.html"
+
+    filterset_class = PaidCLCFilter
+    queryset = model.objects.filter(status=1, profile__clc_status=True)
+
+@staff_member_required
+def PaidCLCDownload(request):
+	kwargs = request.GET.copy()
+	filters = {'profile__clc_status': False}
+	for i,j in kwargs.items():
+		if kwargs[i]:
+			filters[i] = j
+	filters.pop('page', None)
+	ren = {'f_name': 'Father Name', 'm_name': 'Mother Name'}
+	data = pd.read_sql("""SELECT reg_no, CONCAT(first_name, ' ', last_name) as full_name, email, 
+		f_name, m_name, gender, dob, m_status, adhar, phone, 
+		whatsapp, address, state, city, district, pincode, religion,
+		category, g_occupation, g_income, phy_disabled,
+		exm_roll, cls_roll, exm_year, pass_year, total_marks, obtained_marks, 
+		division, exm_month, course_id, session_id, fee_type, easepayid, amount as Fee, TO_CHAR(created_at, 'DD/MM/YYYY HH:MI am') as Payment_At
+		FROM public.users_profile as pf inner join users_paymentstatus as ps on ps.profile_id=pf.id
+		inner join users_clcstudent as clc on clc.profile_id=pf.id
+		inner join auth_user as users on users.id=pf.user_id
+		where pf.clc_status=true and ps.status=1;
+		""", engine, index_col="reg_no")
+	response = HttpResponse(content_type='text/csv')
+	response['Content-Disposition'] = 'attachment; filename=filename.csv'
+	data['gender'] = data['gender'].map(dict((x, y) for x, y in GENDER))
+	data['religion'] = data['religion'].map(dict((x, y) for x, y in RELIGION_LIST))
+	data['m_status'] = data['m_status'].map(dict((x, y) for x, y in MARITAL_STATUS))
+	data['category'] = data['category'].map(dict((x, y) for x, y in CATEGORY))
+	data['fee_type'] = data['fee_type'].map(dict((x, y) for x, y in CLC_FEE_TYPE))
+	data['phy_disabled'] = data['phy_disabled'].map(dict((x, y) for x, y in DISABLED))
+	data['course_id'] = data['course_id'].map({i.pk:i.name for i in Courses.objects.all()})
+	data['session_id'] = data['session_id'].map({i.pk:i.name for i in CLCYear.objects.all()})
+	data.rename(columns=ren, inplace=True)
+	d = {}
+	for i in data.columns:
+		if i.endswith('_id'):
+			d[i] = i[:-3]
+	data.rename(columns=d, inplace=True)
+	data.to_csv(path_or_buf=response,sep=';',float_format='%.2f')
+	return response
+
+
+@method_decorator(staff_member_required, name="dispatch")
+class AddClcFee(SuccessMessageMixin, CreateView):
+	model = CLCFee
+	fields = '__all__'
+	template_name = 'registration/create_form.html'
+	success_url = reverse_lazy('master:add_clc_fee')
+
+	def get_table_template(self):
+		return "registration/"+self.model.__name__.lower()+"_table.html"
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['object_list'] = self.model.objects.all()
+		context['title'] = 'Add CLC Fee'
+		context['list_title'] = 'CLC Fee List'
+		context['table_template'] = self.get_table_template()
+		# context['list_id'] = 'add_board'
+		return context
+
+@method_decorator(staff_member_required, name="dispatch")
+class UpdateCLCFee(UpdateView):
+	model = CLCFee
+	fields = '__all__'
+	template_name = 'registration/create_form.html'
+	success_url = reverse_lazy('master:add_clc_fee')
+	success_message = 'Fee Structure Successfully Updated'
+
+	def get_table_template(self):
+		return "registration/"+self.model.__name__.lower()+"_table.html"
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['object_list'] = self.model.objects.filter().exclude(pk=self.kwargs['pk'])
+		context['title'] = 'Add CLC Fee'
+		context['list_title'] = 'CLC FEE List'
+		context['table_template'] = self.get_table_template()
+		context['list_id'] = 'add_fee'
+		return context

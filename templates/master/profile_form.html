@@ -122,19 +122,7 @@
 
 							<div class="widget-body">
 								<div class="widget-main">
-									<form action="" method="post" enctype="multipart/form-data">
-									{% csrf_token %}
-									<div class="tab-content">
-									    {{ form|crispy }}
-									</div>
-
-										<div class="form-actions center">
-											<button type="submit" class="btn btn-sm btn-success">
-												Submit
-												<i class="ace-icon fa fa-arrow-right icon-on-right bigger-110"></i>
-											</button>
-										</div>
-									</form>
+									{% crispy form %}
 								</div>
 							</div>
 						</div>

@@ -31,30 +31,7 @@
 									</h4>
 
 									<div class="space-6"></div>
-
-									<form method="post" action="">
-										{% csrf_token %}
-										{% include 'registration/form-errors.html' %}
-										<fieldset>
-											{{ form|crispy }}
-
-											<div class="space"></div>
-
-											<div class="clearfix">
-												<label class="inline">
-													<input type="checkbox" class="ace" />
-													<span class="lbl"> Remember Me</span>
-												</label>
-
-												<button type="submit" class="width-35 pull-right btn btn-sm btn-primary">
-													<i class="ace-icon fa fa-key"></i>
-													<span class="bigger-110">Login</span>
-												</button>
-											</div>
-
-											<div class="space-4"></div>
-										</fieldset>
-									</form>
+									{% crispy form %}
 
 									<div class="social-or-login center">
 										<span class="bigger-110">Or</span>

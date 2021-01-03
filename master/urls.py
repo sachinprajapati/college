@@ -19,6 +19,8 @@ urlpatterns = [
 	path('updateComposition/<int:pk>/', UpdateComposition.as_view(), name="update_composition"),
 	path('addFee/', AddFee.as_view(), name="add_fee"),
 	path('updateFee/<int:pk>/', UpdateFee.as_view(), name="update_fee"),
+	path('addClcFee/', AddClcFee.as_view(), name="add_clc_fee"),
+	path('updateClcFee/<int:pk>/', UpdateCLCFee.as_view(), name="update_clc_fee"),
 	path('EditProfile/', EditProfile, name="edit_profile"),
 	path('UpdateStudentProfile/<int:pk>/', UpdateStudentProfile.as_view(), name="update_student"),
 	path('UpdateStudentEducation/<int:pk>/', UpdateStudentEducation, name="update_student_education"),
@@ -26,4 +28,8 @@ urlpatterns = [
 	path('StudentCourse/<int:pk>/', StudentCourse, name="course_detail"),
 	path('AddStudent/', AddStudent.as_view(), name="add_student"),
 	path('AddBulkStudent/', AddBulkStudent.as_view(), name="add_bstudent"),
+	path('PaidStudentReport/', PaidStudentReport.as_view(), name="paid_student_report"),
+	path('PaidReportDownload/', PaidReportDownload, name="PaidReportDownload"),
+	path('PaidCLCReport/', PaidCLCReport.as_view(), name="paid_clc_report"),
+	path('PaidCLCDownload/', PaidCLCDownload, name="PaidCLCDownload"),
 ]

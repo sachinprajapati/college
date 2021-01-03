@@ -18,10 +18,6 @@ CATEGORY = [
 	("T", 'ST'),
 ]
 
-SUBJECT_TYPE = [
-	
-]
-
 MARITAL_STATUS = [
 	("U", 'Unmarried'),
 	("M", 'Married'),
@@ -111,6 +107,7 @@ FeeHeads = [
 	(2, 'First Year'),
 	(3, 'Second Year'),
 	(4, 'Third Year'),
+	(5, 'clc'),
 ]
 
 DIVISION_LIST = [
@@ -120,3 +117,13 @@ DIVISION_LIST = [
 ]
 
 MONTH_LIST = [(i, date(1900, i, 1).strftime('%B')) for i in range(1,13)]
+
+PAYMENT_STATUS = [
+	(0, 'failure'),
+	(1, 'success')
+]
+
+CLC_FEE_TYPE = [
+	(1, 'Normal Fee'),
+	(2, 'Tatkal Fee'),
+]

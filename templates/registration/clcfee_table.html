@@ -1,0 +1,26 @@
+  <tr>
+     <th class="center">#</th>
+     <th class="center">Course</th>
+     <th class="center">Type</th>
+     <th class="center">Fee</th>
+     <th class="center">Edit</th>
+  </tr>
+</thead>
+<tbody>
+  {% for i in object_list %}
+  	<tr>
+     <td class="center">{{ forloop.counter }}</td>
+     <td class="center">
+        {{ i.course.name }}                                
+     </td>
+     <td class="center">
+        {{ i.get_fee_type_display }}																
+     </td>
+     <td class="center">
+        {{ i.fee }}                                
+     </td>
+     <td class="center">
+        <a href="{{ i.get_absolute_url }}">Edit</a>
+      </td>
+  </tr>
+  {% endfor %}

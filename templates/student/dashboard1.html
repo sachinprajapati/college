@@ -244,6 +244,21 @@
                                                                         </td>
                                                                     </tr>
                                                                     {% endif %}
+                                                                    {% if user.profile.clc_status %}
+                                                                    <tr>
+                                                                        <td class="">Student CLC Details</td>
+                                                                        <td class="hidden-480">
+                                                                            
+                                                                            <a href="#" id="ContentPlaceHolder1_lnkcoursesuccess">
+                                                                                {% if user.profile.clcstudent %}
+                                                                                    <span class="label label-success arrowed">Success</span>
+                                                                                {% else %}
+                                                                                    <span class="label label-danger  arrowed-right">Pending</span>
+                                                                                {% endif %}
+                                                                            </a>
+                                                                        </td>
+                                                                    </tr>
+                                                                    {% else %}
                                                                     <tr>
                                                                         <td class="">Student Course Details</td>
                                                                         <td class="hidden-480">
@@ -257,6 +272,13 @@
                                                                             </a>
                                                                         </td>
                                                                     </tr>
+                                                                    {% endif %}
+                                                                    {% if ps %}
+                                                                    <tr>
+                                                                        <td>Payment Slip</td>
+                                                                        <td><a href="{% url 'college:PaymentReceipt' %}"><span class="label label-success arrowed">Click Here</span></a></td>
+                                                                    </tr>
+                                                                    {% endif %}
                                                                 </tbody>
                                                             </table>
                                                         </div>

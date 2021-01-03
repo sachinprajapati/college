@@ -4,6 +4,9 @@ from django.core.exceptions import ValidationError
 
 from django.contrib.auth.models import User
 
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, Row, Column
+
 from .models import *
 
 class DateInput(forms.DateInput):
@@ -44,6 +47,7 @@ class StudentForms(forms.ModelForm):
 		if not m.user.email:
 			m.user.email = self.cleaned_data['email']
 			m.user.save()
+		m.status = True
 		if commit:
 			m.save()
 		return m
@@ -115,15 +119,31 @@ class PsubjectForm(forms.ModelForm):
 		fields = '__all__'
 
 
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, Div, Row, Column, Field
-
 class CLCRegistrationForm(forms.ModelForm):
 	# academic_session = forms.ModelChoiceField(queryset=CLCYear.objects.all())
 	first_name = forms.CharField()
 	last_name = forms.CharField()
 	board_roll_no = forms.IntegerField()
 	course = forms.ModelChoiceField(queryset=Courses.objects.all())
+
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.helper = FormHelper()
+		self.helper.layout = Layout(
+		    Row(
+		        Column('first_name', css_class='form-group col-md-4 mb-0'),
+		        Column('last_name', css_class='form-group col-md-4 mb-0'),
+		        Column('phone', css_class='form-group col-md-4 mb-0'),
+		        css_class='form-row'
+		    ),
+		    Row(
+		        Column('board_roll_no', css_class='form-group col-md-4 mb-0'),
+		        Column('course', css_class='form-group col-md-4 mb-0'),
+		        Column('dob', css_class='form-group col-md-4 mb-0'),
+		        css_class='form-row'
+		    ),
+		    Submit('submit', 'Submit', css_class='btn btn-primary btn-block')
+		)
 
 	class Meta:
 		model = Profile
@@ -132,6 +152,12 @@ class CLCRegistrationForm(forms.ModelForm):
             'dob': DateInput()
         }
 
+	def clean(self):
+		data = self.cleaned_data
+		if User.objects.filter(username=data['board_roll_no']).exists():
+			raise forms.ValidationError('User Already Exists with this roll no')
+		return data
+
 	def save(self, commit=True):
 		m = super(CLCRegistrationForm, self).save(commit=False)
 		data = self.cleaned_data
@@ -139,6 +165,7 @@ class CLCRegistrationForm(forms.ModelForm):
 		pwd = ''.join(str(data['dob']).split('-'))
 		u = User(username=data['board_roll_no'], first_name=data['first_name'], last_name=data['last_name'], \
 			)
+		print("pwd", pwd)
 		u.set_password(pwd)
 		u.save()
 		m.user = u
@@ -149,6 +176,30 @@ class CLCRegistrationForm(forms.ModelForm):
 
 
 class CLCCourseForm(forms.ModelForm):
+
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.helper = FormHelper()
+		self.helper.layout = Layout(
+		    Row(
+		        Column('exm_roll', css_class='form-group col-md-3 mb-0'),
+		        Column('course', css_class='form-group col-md-3 mb-0'),
+		        Column('session', css_class='form-group col-md-3 mb-0'),
+		        Column('pass_year', css_class='form-group col-md-3 mb-0'),
+		        css_class='form-row'
+		    ),
+		    Row(
+		        Column('total_marks', css_class='form-group col-md-2 mb-0'),
+		        Column('obtained_marks', css_class='form-group col-md-2 mb-0'),
+		        Column('division', css_class='form-group col-md-2 mb-0'),
+		        Column('exm_month', css_class='form-group col-md-2 mb-0'),
+		        Column('exm_year', css_class='form-group col-md-2 mb-0'),
+		        Column('fee_type', css_class='form-group col-md-2 mb-0'),
+		        css_class='form-row'
+		    ),
+		    Submit('submit', 'Submit', css_class='btn btn-primary')
+		)
+
 	class Meta:
 		model = CLCStudent
 		exclude = ('profile', 'cls_roll')

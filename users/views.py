@@ -1,29 +1,60 @@
 from django.shortcuts import render
 from django.shortcuts import redirect, HttpResponseRedirect, get_object_or_404
+
 from django.views.generic.edit import CreateView, UpdateView, FormView
 from django.views.generic.base import TemplateView
+from django.views.decorators.csrf import csrf_exempt
+
+from django.utils.decorators import method_decorator
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
+from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.admin.views.decorators import staff_member_required
 
 from django.urls import reverse_lazy
 from django.http import JsonResponse, Http404, HttpResponse
 
 from django.db.models import Sum
-from datetime import date
+from datetime import date, datetime
+
+from college.settings import pay_option, ALLOWED_HOSTS
+
+from easebuzz_lib.easebuzz_payment_gateway import Easebuzz
+import json
 
 from .models import *
 from .forms import *
 
+def StudentFeeHead(function):
+    def wrapper(request, *args, **kw):
+        user=request.user  
+        if not StudentFee.objects.filter(profile=user.profile, feehead=2).exists():
+            return HttpResponseRedirect(reverse_lazy('college:college_dashboard'))
+        else:
+            return function(request, *args, **kw)
+    return wrapper
+
+def PaymentStatusDeco(function):
+	def wrapper(request, *args, **kwargs):
+		if PaymentStatus.objects.filter(profile=request.user.profile, status=1).exists():
+			return HttpResponseRedirect(reverse_lazy('college:college_dashboard'))
+		return function(request, *args, **kwargs)
+	return wrapper
+
 @login_required
 def Dashboard(request):
-	print(request.user.is_staff)
+	context = {}
+	print(request.user.username)
 	if request.user.is_staff:
-		return render(request, 'student/dashboard.html', {})
-	return render(request, 'student/dashboard1.html', {})
+		return render(request, 'student/dashboard.html', context)
+	if request.user.profile.paymentstatus_set.all():
+		ps = get_object_or_404(PaymentStatus, profile=request.user.profile, status=1)
+		context = {'ps': ps}
+	print(context)
+	return render(request, 'student/dashboard1.html', context)
 
-
+@method_decorator(PaymentStatusDeco, name="dispatch")
 class StudentBasicInfo(LoginRequiredMixin, UpdateView):
 	form_class = StudentForms
 	template_name = 'student/student_basic.html'
@@ -38,7 +69,6 @@ class StudentBasicInfo(LoginRequiredMixin, UpdateView):
 	    return kwargs
 
 	def get_success_url(self, **kwargs):
-		print(self.request.user.profile.clc_status)
 		if self.request.user.profile.clc_status:
 			return reverse_lazy('college:clc_course')
 		elif not StudentFee.objects.filter(profile=self.request.user.profile, feehead=2).exists():
@@ -46,17 +76,9 @@ class StudentBasicInfo(LoginRequiredMixin, UpdateView):
 		else:
 			reverse_lazy("college:student_education")
 
-def StudentFeeHead(function):
-    def wrapper(request, *args, **kw):
-        user=request.user  
-        if not StudentFee.objects.filter(profile=user.profile, feehead=2).exists():
-            return HttpResponseRedirect(reverse_lazy('college:college_dashboard'))
-        else:
-            return function(request, *args, **kw)
-    return wrapper
-
 @StudentFeeHead
 @login_required
+@PaymentStatusDeco
 def StudentEducationDetails(request):
 	if hasattr(request.user.profile, 'previouseducation'):
 		form = StudentEducationForms(request.POST or None, request.FILES or None, instance=request.user.profile.previouseducation)
@@ -69,7 +91,7 @@ def StudentEducationDetails(request):
 	context = {"form": form}
 	return render(request, 'student/student_education.html', context)
 
-@method_decorator(StudentFeeHead, name="dispatch")
+@method_decorator([StudentFeeHead, PaymentStatusDeco], name="dispatch")
 class StudentEducationUpdate(LoginRequiredMixin, UpdateView):
 	model = PreviousEducation
 	template_name = 'student/student_education.html'
@@ -82,6 +104,7 @@ class StudentEducationUpdate(LoginRequiredMixin, UpdateView):
 	    return context
 
 @login_required
+@PaymentStatusDeco
 def StudentCourseDetails(request):
 	if not request.user.profile.previouseducation_set.all() and StudentFee.objects.filter(profile=request.user.profile, feehead=2).exists():
 		return redirect(reverse_lazy("college:student_education"))
@@ -122,60 +145,97 @@ def StudentDetailCheck(function):
 	return wrapper
 
 
-@method_decorator(StudentDetailCheck, name="dispatch")
+@method_decorator([StudentDetailCheck, PaymentStatusDeco], name="dispatch")
 class StudentDetailsPreview(LoginRequiredMixin, TemplateView):
 	models = Profile
 	template_name = "student/student_course_preview.html"
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		profile = self.request.user.profile
-		context['profile'] = profile
-		print(context)
+		context['profile'] = self.request.user.profile
 		return context
-
-import hashlib
-import datetime
-from pythonkit.checksum import Checksum
-chk = Checksum()
 
 @login_required
 @StudentDetailCheck
+@PaymentStatusDeco
 def PaymentInit(request):
 	profile = request.user.profile
-	print(profile.reg_no)
-	st = (p.feehead for p in profile.studentfee_set.all())
-	if profile.studentfee_set.all():
-		context = {}
-		context['fm'] = FeeMaster.objects.filter(course=profile.coursedetail.hons_paper.course,\
-						feehead__in=st,
-						gender=profile.gender,
-						category=profile.category,
-						status=1,
-						board=profile.coursedetail.hons_paper.course.college.board,
-			)
-		context['fee'] = context['fm'].aggregate(Sum('amount'))['amount__sum']
-		context['fee'] += sum([i.practical.amount for i in profile.coursedetail.get_Practical()]) if \
-						profile.coursedetail.get_Practical() else 0
-		context['fee'] = '%.2f' % context['fee']
-		context['practical'] = [i.name for i in profile.coursedetail.get_Practical()]
-		alldata = request.user.email + request.user.first_name + request.user.last_name + str(context['fee']) + "order1"
-		today = datetime.datetime.now().strftime ("%Y-%m-%d")
-		context['privatekey'] = chk.encrypt('8390512' + ":|:" + 'eQpGsU4d', 'rVhUp4Y42bMTJYeh')
-		context['checksum'] = chk.calculateChecksum(alldata + today, context['privatekey'])
-		return render(request, 'registration/payment_init.html', context)
+	txn_id = datetime.now().strftime("%y%m%d%H%M%S")+profile.reg_no
+	easebuzzObj = Easebuzz(pay_option['MERCHANT_KEY'], pay_option['SALT'], pay_option['ENV'])
+	print(txn_id)
+	postDict = {
+	    'txnid': txn_id,
+	    'firstname': request.user.first_name,
+	    'phone': str(profile.phone),
+	    'email': request.user.email,
+	    'amount': '%.2f' % request.user.profile.getTotalFee(),
+	    'productinfo': 'Apple Mobile',
+	    'surl': 'http://localhost:8000/PaymentConfirmation/',
+	    'furl': 'http://localhost:8000/PaymentConfirmation/',
+	    'city': profile.city,
+	    'zipcode': str(profile.pincode),
+	    'address2': 'aaaa',
+	    'state': 'aaaa',
+	    'address1': 'aaaa',
+	    'country': 'aaaa',
+	    'udf1': 'aaaa',
+	    'udf2': 'aaaa',
+	    'udf3': 'aaaa',
+	    'udf4': 'aaaa',
+	    'udf5': 'aaaa'
+	}
+	final_response = easebuzzObj.initiatePaymentAPI(postDict)
+	result = json.loads(final_response)
+	if result['status'] == 1:
+		ps = PaymentStatus(tid=txn_id, amount=request.user.profile.getTotalFee(), profile=profile)
+		ps.save()
+		return redirect(result['data'])
 	else:
-		raise Http404
+	    return render(request, 'payment/response.html', {'response_data': final_response})
+
+from weasyprint import HTML
+from django.template.loader import render_to_string
+
+from django.contrib.staticfiles import finders
+from weasyprint import HTML, CSS
 
 def PaymentReceipt(request):
-	context = {}
-	return render(request, 'registration/print-order-invoice.html', context)
+	print(request.user)
+	ps = get_object_or_404(PaymentStatus, profile=request.user.profile, status=1)
+	context = {
+		'ps': ps,
+		'profile': request.user.profile
+	}
+	result = finders.find('assets/css/bootstrap.min.css')
+	html_string = render_to_string('registration/print-order-invoice.html', context)
+	css = open(result, 'r').read()
 
+	html = HTML(string=html_string)
+	html.write_pdf(target='/tmp/mypdf.pdf', stylesheets=[CSS(string='@page { size: A4; margin: 0.1cm }'), CSS(string=css)]);
+
+	fs = FileSystemStorage('/tmp')
+	with fs.open('mypdf.pdf') as pdf:
+	    response = HttpResponse(pdf, content_type='application/pdf')
+	    response['Content-Disposition'] = 'attachment; filename="mypdf.pdf"'
+	    return response
+
+	return response
+	#return render(request, 'registration/print-order-invoice.html', context)
+
+@csrf_exempt
 def PaymentConfirmation(request):
 	if request.method == 'POST':
-		r = Response(text=request.POST, host=request.META['HTTP_HOST'])
-		r.save()
-		return HttpResponse(request.POST)
+		if request.META['HTTP_HOST'] in ALLOWED_HOSTS:
+			ps = get_object_or_404(PaymentStatus, tid=request.POST['txnid'])
+			if request.POST['status'] == 'success':
+				ps.status = 1
+				ps.easepayid = request.POST['easepayid']
+				ps.save()
+				return redirect(reverse_lazy('college:PaymentReceipt'))
+			else:
+				ps.status = 0
+				ps.save()
+				return redirect(reverse_lazy('college:student_course_preview'))
 	return Http404('page not found')
 
 def Register(request):
@@ -200,12 +260,14 @@ def Register(request):
 			return JsonResponse({'message': str(e), 'error': True})
 	return render(request, 'registration/register.html', {})
 
-class CLCRegistration(CreateView):
+class CLCRegistration(SuccessMessageMixin, CreateView):
 	form_class = CLCRegistrationForm
 	template_name = 'student/clc_registration.html'
-	success_url = '/'
+	success_url = reverse_lazy('college:clc_registration')
+	success_message = 'you are successfully registered please contact'
 
 @login_required
+@PaymentStatusDeco
 def CLCCourse(request):
 	if hasattr(request.user.profile, 'clcstudent'):
 		form = CLCCourseForm(request.POST or None, instance=request.user.profile.clcstudent)

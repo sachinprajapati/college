@@ -77,21 +77,36 @@ class Profile(models.Model):
 	clc_status = models.BooleanField(default=False)
 
 	def getCourseTotal(self):
-		fm = FeeMaster.objects.filter(course=self.coursedetail.course,\
+		return FeeMaster.objects.filter(course=self.coursedetail.course,\
 						feehead__in=(p.feehead for p in self.studentfee_set.all()),
 						gender=self.gender,
 						category=self.category,
 						status=1,
-						board=self.coursedetail.course.college.board).aggregate(Sum('amount'))['amount__sum']
-		return fm if fm else 0
+						board=self.coursedetail.course.college.board).aggregate(Sum('amount'))['amount__sum'] or 0
 
 	def getPTotal(self):
-		return sum([i.practical.amount for i in self.coursedetail.get_Practical()]) if \
-								self.coursedetail.get_Practical() else 0
+		return sum([i.practical.amount for i in self.coursedetail.get_Practical()]) or 0
 
 	def getTotalFee(self):
-		print(type(self.getCourseTotal()), type(self.getPTotal()))
+		if self.clc_status:
+			return CLCFee.objects.filter(course=self.clcstudent.course, fee_type=self.clcstudent.fee_type).aggregate(Sum('fee'))['fee__sum'] or 0
 		return self.getCourseTotal()+self.getPTotal()
+
+	def getCollege(self):
+		if self.clc_status:
+			return self.clcstudent.course
+		return self.coursedetail.course
+
+	def FeeheadDisplay(self):
+		return ','.join([j.get_feehead_display() for j in self.studentfee_set.all()])
+
+	def getCourse(self):
+		if self.clc_status:
+			return self.clcstudent.course
+		return self.coursedetail.course
+
+	def __str__(self):
+		return self.reg_no
 
 
 class Board(models.Model):
@@ -105,7 +120,7 @@ class Board(models.Model):
 		return reverse_lazy('master:update_board', args=[str(self.id)])
 
 def college_directory(instance, filename):
-    return 'college_{0}/{1}'.format(instance.id, filename)
+    return '{0}/{1}'.format(instance.name, filename)
 
 
 class College(models.Model):
@@ -116,6 +131,10 @@ class College(models.Model):
 	pin_code = models.PositiveIntegerField()
 	board = models.ForeignKey(Board, on_delete=models.CASCADE)
 	logo = models.ImageField(upload_to=college_directory, storage=OverwriteStorage())
+	tag_line = models.CharField(max_length=255)
+	website = models.URLField()
+	phone_regex = RegexValidator(regex=r'^(\+\d{1,3})?,?\s?\d{10}', message="Phone number must be entered in the format: '+999999999'. Up to 10 digits allowed.")
+	phone = models.DecimalField(validators=[phone_regex], max_digits=10, decimal_places=0)
 
 	def __str__(self):
 		return '{}'.format(self.name)
@@ -164,7 +183,7 @@ class Composition(models.Model): #Optional Subject
 	sub = models.ForeignKey(Subject, on_delete=models.CASCADE, verbose_name="Subject Name")
 
 	def __str__(self):
-		return 'course {} sub {}'.format(self.course, self.sub)
+		return '{}'.format(self.sub)
 
 	def get_absolute_url(self):
 		return reverse_lazy('master:update_composition', args=[str(self.id)])
@@ -185,7 +204,7 @@ class FeeMaster(models.Model):
 
 	class Meta:
 	    constraints = [
-	        models.UniqueConstraint(fields=['course', 'feehead', 'gender', 'board'], name='Fee Structure already exist')
+	        models.UniqueConstraint(fields=['course', 'category', 'feehead', 'gender', 'board'], name='Fee Structure already exist')
 	    ]
 
 	def get_absolute_url(self):
@@ -237,13 +256,15 @@ class StudentFee(models.Model):
 	profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
 	dt = models.DateTimeField(auto_now_add=True)
 
+	def __str__(self):
+		return '{} - {}'.format(self.profile.reg_no, self.get_feehead_display())
+
 class practical(models.Model):
 	subject = models.OneToOneField(Subject, on_delete=models.CASCADE)
 	amount = models.PositiveIntegerField()
 
 	def get_absolute_url(self):
 		return reverse_lazy('master:update_psubject', args=[str(self.id)])
-
 
 class Response(models.Model):
 	text = models.TextField()
@@ -274,3 +295,27 @@ class CLCStudent(models.Model):
 	obtained_marks = models.PositiveSmallIntegerField()
 	division = models.PositiveSmallIntegerField(choices=DIVISION_LIST, verbose_name="Passing Division")
 	exm_month = models.PositiveSmallIntegerField(choices=MONTH_LIST, verbose_name="Examination Month")
+	fee_type = models.PositiveSmallIntegerField(choices=CLC_FEE_TYPE)
+
+
+class PaymentStatus(models.Model):
+	profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
+	tid = models.CharField(max_length=255, unique=True)
+	amount = models.PositiveIntegerField()
+	status = models.PositiveIntegerField(null=True)
+	easepayid = models.CharField(max_length=255, null=True)
+	created_at = models.DateTimeField(auto_now_add=True)
+	update_at = models.DateTimeField(auto_now=True, null=True)
+
+class CLCFee(models.Model):
+	course = models.ForeignKey(Courses, on_delete=models.CASCADE)
+	fee_type = models.PositiveSmallIntegerField(choices=CLC_FEE_TYPE)
+	fee = models.PositiveIntegerField()
+
+	class Meta:
+	    constraints = [
+	        models.UniqueConstraint(fields=['course', 'fee_type'], name='CLC Fee already exist')
+	    ]
+
+	def get_absolute_url(self):
+		return reverse_lazy('master:update_clc_fee', args=[str(self.id)])

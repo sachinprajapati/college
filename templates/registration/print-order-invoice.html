@@ -6,28 +6,26 @@
         background: #fff;
     }
 </style>
+
 <div class="container-fluid">
-    <div class="container">
+    <div class="">
          
         <div class="job-seeker-content">
 
             <div class="row">
                 <div class="col-xs-12 col-md-12" style="margin-top:50px;">
-                    <div style="margin:10px;border:2px solid black;">
+                    <div style="">
                     
                     <div class="col-md-12">
                         <div>
-                            <img src="{{ user.profile.coursedetail.course.college.logo.url }}" style="width:100px;height:100px;float:left;margin:5px;">
+                            <img src="{{ profile.getCollege.logo.url }}" style="width:100px;height:100px;float:left;margin:5px;">
                         </div>
                         <div style="text-align:center;margin-right:50px;">
-                            <h1 style="margin-top:0px">{{ user.profile.coursedetail.course.college.board.name }}</h1>
-                            <span>(A Constituent Unit of Patliputra University, Patna)<br>
-                            {{ user.profile.coursedetail.course.college.address }}<br></span>
-                            <span style="font-size:10px;">Website: https://www.ancpatna.ac.in, Phone: 0612 2540482</span>
+                            <h1 style="margin-top:0px">{{ profile.getCollege.name|title }}</h1>
+                            <span>({{ profile.getCollege.tag_line|title }})<br>
+                            {{ profile.getCollege.address }}<br></span>
+                            <span style="font-size:10px;">Website: {{ profile.getCollege.website}}, Phone: {{ profile.getCollege.phone }}</span>
                         </div>
-                        <!--<div style="border:1px solid black; width:50px;height:50px;">
-                            <img src="<?php echo FRONT_MEDIA_URL; ?>img/ANC_LOGO.jpg">
-                        </div>-->
                     </div>
                     <div class="col-md-12">
                     <div style="text-align:center;"><b>E-Receipt [College Copy]</b></div>
@@ -51,7 +49,7 @@
                                 <td style="width:20%;font-weight:600">Applied For Stream: </td>
                                 <td style="width:30%;font-weight:600">{{ user.profile.coursedetail.course }}</td>
                                 <td style="width:20%;font-weight:600">Board Name: </td>
-                                <td style="width:30%;font-weight:600">{{ user.profile.coursedetail.course.college.board.name }}</td>
+                                <td style="width:30%;font-weight:600">{{ profile.getCollege.board.name }}</td>
                             </tr>
                             <tr>
                                 <td style="width:20%;font-weight:600">Intermediate Registration Id: </td>
@@ -65,9 +63,7 @@
                         
                     </div>
                     <div class="col-md-12">
-                        <table style="margin:20px;width:20%;float:left;">
-                        </table>
-                        <table border=1 style="margin:20px;width:100%;float:right;">
+                        <table border=1 style="margin:20px;width:100%">
                             <tr>
                                 <th style="width:10%;font-weight:600">Sr No</th>
                                 <th style="width:60%;font-weight:600">Description</th>
@@ -102,13 +98,13 @@
                             </tr>
                             <tr>
                                 <td style="width:20%;font-weight:600">Payment Id: </td>
-                                <td style="width:30%;font-weight:600">123</td>
+                                <td style="width:30%;font-weight:600">{{ ps.tid }}</td>
                             </tr>
                             <tr>
                                 <td style="width:20%;font-weight:600">Total </td>
                                 <td style="width:30%;font-weight:600">{{ user.profile.getTotalFee }}</td>
                                 <td style="width:20%;font-weight:600">Transaction ID</td>
-                                <td style="width:30%;font-weight:600">2121</td>
+                                <td style="width:30%;font-weight:600">{{ ps.easepayid }}</td>
                             </tr>
                             
                         </table>
@@ -136,17 +132,17 @@
             <hr/>
             <div class="row" style="padding-bottom:50px;">
                 <div class="col-xs-12 col-md-12" style="margin-top:50px;">
-                    <div style="margin:10px;border:2px solid black;">
+                    <div style="">
                     
                     <div class="col-md-12">
                         <div>
-                            <img src="{{ user.profile.coursedetail.course.college.logo.url }}" style="width:100px;height:100px;float:left;margin:5px;">
+                            <img src="{{ profile.getCollege.logo.url }}" style="width:100px;height:100px;float:left;margin:5px;">
                         </div>
                         <div style="text-align:center;margin-right:50px;">
-                            <h1 style="margin-top:0px">{{ user.profile.coursedetail.course.college.name }}</h1>
-                            <span>(A Constituent Unit of Patliputra University, Patna)<br>
-                            {{ user.profile.coursedetail.course.college.address }}<br></span>
-                            <span style="font-size:10px;">Website: https://www.ancpatna.ac.in, Phone: 0612 2540482</span>
+                            <h1 style="margin-top:0px">{{ profile.getCollege.name|title }}</h1>
+                            <span>({{ profile.getCollege.tag_line|title }})<br>
+                            {{ profile.getCollege.address }}<br></span>
+                            <span style="font-size:10px;">Website: {{ profile.getCollege.website }}, Phone: {{ profile.getCollege.phone }}</span>
                         </div>    
                     </div>
                     <div class="col-md-12">
@@ -171,7 +167,7 @@
                                 <td style="width:20%;font-weight:600">Applied For Stream: </td>
                                 <td style="width:30%;font-weight:600">{{ user.profile.coursedetail.course }}</td>
                                 <td style="width:20%;font-weight:600">Board Name: </td>
-                                <td style="width:30%;font-weight:600">{{ user.profile.coursedetail.course.college.board.name }}</td>
+                                <td style="width:30%;font-weight:600">{{ profile.getCollege.board.name }}</td>
                             </tr>
                             <tr>
                                 <td style="width:20%;font-weight:600">Intermediate Registration Id: </td>
@@ -216,13 +212,13 @@
                             </tr>
                             <tr>
                                 <td style="width:20%;font-weight:600">Payment Id: </td>
-                                <td style="width:30%;font-weight:600">123</td>
+                                <td style="width:30%;font-weight:600">{{ ps.tid }}</td>
                             </tr>
                             <tr>
                                 <td style="width:20%;font-weight:600">Total </td>
                                 <td style="width:30%;font-weight:600">{{ user.profile.getTotalFee }}</td>
                                 <td style="width:20%;font-weight:600">Transaction ID</td>
-                                <td style="width:30%;font-weight:600">6757</td>
+                                <td style="width:30%;font-weight:600">{{ ps.easepayid }}</td>
                             </tr>
                             
                         </table>
@@ -243,9 +239,8 @@
                          
                     </div>
                 </div>
+                <button onclick="window.print()">Print this page</button>
             </div>
-            
-            
         </div>
     </div>
 </div>

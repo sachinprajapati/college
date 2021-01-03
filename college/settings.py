@@ -25,7 +25,7 @@ SECRET_KEY = '7im%yw8*0ba!o&&-m1ubm#!kb$tl3++!or=t6-7!&t3oe6%%c1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*', 'localhost:8000']
 
 
 # Application definition
@@ -40,7 +40,10 @@ INSTALLED_APPS = [
     'users',
     'master',
     'crispy_forms',
-    'django_extensions'
+    'django_extensions',
+    'django_tables2',
+    'django_filters',
+    'bootstrap3'
 ]
 
 MIDDLEWARE = [
@@ -88,7 +91,7 @@ WSGI_APPLICATION = 'college.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'college',
+        'NAME': 'college1',
         'USER': 'sachin',
         'PASSWORD': 'admin123',
         'HOST': 'localhost',
@@ -96,6 +99,20 @@ DATABASES = {
     }
 }
 
+user = DATABASES['default']['USER']
+password = DATABASES['default']['PASSWORD']
+database_name = DATABASES['default']['NAME']
+host = DATABASES['default']['HOST']
+
+database_url = 'postgresql://{user}:{password}@{localhost}:5432/{database_name}'.format(
+    user=user,
+    password=password,
+    localhost=host,
+    database_name=database_name,
+)
+
+from sqlalchemy import create_engine
+engine = create_engine(database_url, echo=False)
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -121,7 +138,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+# TIME_ZONE = 'UTC'
+
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
@@ -135,10 +154,13 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+
+MEDIA_ROOT = BASE_DIR / "media"
+
+MEDIA_URL = '/media/'
 
 LOGOUT_REDIRECT_URL = '/'
 
@@ -147,3 +169,11 @@ LOGIN_REDIRECT_URL = '/dashboard/'
 LOGIN_URL = '/'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+pay_option = {
+    'MERCHANT_KEY': '2PBP7IABZ2',
+    'SALT': 'DAH88E3UWQ',
+    'ENV': 'test'
+}
+
+DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap.html"

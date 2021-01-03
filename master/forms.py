@@ -11,6 +11,9 @@ from users.choices import *
 
 import pandas as pd
 
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit, Row, Column
+
 class DateInput(forms.DateInput):
     input_type = 'date'
 
@@ -18,6 +21,26 @@ class AddStudentForm(forms.ModelForm):
 	first_name = forms.CharField()
 	last_name = forms.CharField()
 	course_name = forms.ChoiceField(choices=FeeHeads)
+
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.helper = FormHelper()
+		self.helper.layout = Layout(
+		    Row(
+		        Column('first_name', css_class='form-group col-md-4 mb-0'),
+		        Column('last_name', css_class='form-group col-md-4 mb-0'),
+		        Column('phone', css_class='form-group col-md-4 mb-0'),
+		        css_class='form-row'
+		    ),
+		    Row(
+		        Column('reg_no', css_class='form-group col-md-4 mb-0'),
+		        Column('course_name', css_class='form-group col-md-4 mb-0'),
+		        Column('dob', css_class='form-group col-md-4 mb-0'),
+		        css_class='form-row'
+		    ),
+		    'check_me_out',
+		    Submit('submit', 'Submit', css_class='btn btn-primary btn-block')
+		)
 
 	class Meta:
 		model = Profile
@@ -53,24 +76,9 @@ FORM_STATUS_CHOICES = [
 ]
 
 from users.choices import MERIT_LIST_CHOICES
-from django.conf import settings
+from college.settings import engine
 
-user = settings.DATABASES['default']['USER']
-password = settings.DATABASES['default']['PASSWORD']
-database_name = settings.DATABASES['default']['NAME']
-host = settings.DATABASES['default']['HOST']
-
-database_url = 'postgresql://{user}:{password}@{localhost}:5432/{database_name}'.format(
-    user=user,
-    password=password,
-    localhost=host,
-    database_name=database_name,
-)
-
-from sqlalchemy import create_engine
 from django.db import IntegrityError, transaction
-
-engine = create_engine(database_url, echo=False)
 
 ren = {'Student Ref. No': 'reg_no', "Father's Name": 'f_name', "Mother's Name": 'm_name', "Gender": 'gender', \
 "Date Of Birth": 'dob', "Mobile No": 'phone', 'Category': 'category', 'Email ID': 'email', 'Whats App No.': 'whatsapp'}
@@ -84,6 +92,20 @@ class AddBulkStudent(forms.ModelForm):
 	merit_list = forms.ChoiceField(choices=MERIT_LIST_CHOICES)
 	course = forms.ChoiceField(choices=FeeHeads)
 
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.helper = FormHelper()
+		self.helper.layout = Layout(
+		    Row(
+		        Column('form_verify_status', css_class='form-group col-md-4 mb-0'),
+		        Column('merit_list', css_class='form-group col-md-4 mb-0'),
+		        Column('course', css_class='form-group col-md-4 mb-0'),
+		        css_class='form-row'
+		    ),
+		    'file',
+		    Submit('submit', 'Submit', css_class='btn btn-primary btn-block')
+		)
+
 	class Meta:
 		model = BulkRecord
 		fields = ('file',)
@@ -94,6 +116,8 @@ class AddBulkStudent(forms.ModelForm):
 		try:
 			with transaction.atomic():
 				df = pd.read_excel(data['file'], engine='openpyxl')
+				if df['Student Ref. No'].duplicated().any():
+					raise ValidationError('Duplicated Record Exist in this file please remove first')
 				df.rename(columns=ren, inplace=True)
 				df.set_index('reg_no', inplace=True)
 				user = df[['email']]
@@ -101,7 +125,7 @@ class AddBulkStudent(forms.ModelForm):
 				old_user = pd.read_sql("select * from {}".format(User.objects.model._meta.db_table), engine, index_col='username')
 				s1 = pd.merge(user, old_user, how='inner', on=['username'])
 				if User.objects.filter(username__in=tuple(user.index.tolist())).exists():
-					raise ValidationError('Dubplicate Record Exist {}'.format(len(s1.index.tolist())))
+					raise ValidationError('Dubplicate Record Exist {} Please Remove them First'.format(len(s1.index.tolist())))
 				user['first_name'] = df['Student Name'].str.split().str[:-1].str.join(' ')
 				user['last_name'] = df['Student Name'].str.split().str[-1]
 				user['is_staff'] = False
@@ -141,6 +165,13 @@ class AddFeeForm(forms.ModelForm):
 		model = FeeMaster
 		fields = '__all__'
 		exclude = ('status', 'category', 'amount')
+
+	def clean(self):
+		data = self.cleaned_data
+		if FeeMaster.objects.filter(course=data['course'], feehead=data['feehead'], gender=data['gender'], board=data['board']).exists():
+			raise forms.ValidationError("Fee Structure already exists")
+		return data
+
 
 	def save(self, commit=True):
 		m = super(AddFeeForm, self).save(commit=False)
