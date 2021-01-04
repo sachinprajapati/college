@@ -18,11 +18,7 @@ from django.http import JsonResponse, Http404, HttpResponse
 
 from django.db.models import Sum
 
-import django_tables2 as tables
 from django_tables2.export.views import ExportMixin
-
-from django_filters import rest_framework as filters
-import django_filters
 from django_filters.views import FilterView
 from django_tables2.views import SingleTableMixin
 from college.settings import engine
@@ -30,89 +26,88 @@ from college.settings import engine
 from users.models import *
 from users.forms import *
 from .forms import *
+from .tables import  *
 from users.choices import PAYMENT_STATUS
 import csv
+from django_tables2 import SingleTableView
 
 @method_decorator(staff_member_required, name='dispatch')
-class AddBoard(CreateView):
+class AddBoard(CreateView, SingleTableView):
+	table_class = BoardListTable
+	model = Board
+	fields = ('name', 'status')
+	template_name = 'registration/create_form.html'
+	success_url = reverse_lazy('master:add_board')
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['title'] = 'Add Board'
+		context['list_title'] = 'Board List'
+		context['list_id'] = 'add_board'
+		return context
+
+@method_decorator(staff_member_required, name="dispatch")
+class UpdateBoard(UpdateView, SingleTableView):
+	table_class = BoardListTable
 	model = Board
 	fields = '__all__'
 	template_name = 'registration/create_form.html'
 	success_url = reverse_lazy('master:add_board')
 
-	def get_table_template(self):
-		return "registration/"+self.model.__name__.lower()+"_table.html"
+	def get_queryset(self):
+		return self.model.objects.filter().exclude(pk=self.kwargs['pk'])
+
+	def get_object(self):
+		return self.model.objects.get(pk=self.kwargs['pk'])
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		context['object_list'] = self.model.objects.all()
 		context['title'] = 'Add Board'
 		context['list_title'] = 'Board List'
-		context['table_template'] = self.get_table_template()
-		context['list_id'] = 'add_board'
-		return context
-
-@method_decorator(staff_member_required, name="dispatch")
-class UpdateBoard(UpdateView):
-	model = Board
-	fields = '__all__'
-	template_name = 'registration/create_form.html'
-	success_url = reverse_lazy('master:add_board')
-
-	def get_table_template(self):
-		return "registration/"+self.model.__name__.lower()+"_table.html"
-
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		context['object_list'] = self.model.objects.filter().exclude(pk=self.kwargs['pk'])
-		context['title'] = 'Add Board'
-		context['list_title'] = 'Board List'
-		context['table_template'] = self.get_table_template()
 		context['list_id'] = 'add_board'
 		return context
 
 
 @method_decorator(staff_member_required, name='dispatch')
-class AddCourse(CreateView):
+class AddCourse(CreateView, SingleTableView):
+	table_class = CourseListTable
 	model = Courses
 	fields = '__all__'
 	template_name = 'registration/create_form.html'
 	success_url = reverse_lazy('master:add_course')
 
-	def get_table_template(self):
-		return "registration/"+self.model.__name__.lower()+"_table.html"
-
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		context['object_list'] = self.model.objects.all()
 		context['title'] = 'Add Course'
 		context['list_title'] = 'Course List'
-		context['table_template'] = self.get_table_template()
 		context['list_id'] = 'add_course'
 		return context
 
 @method_decorator(staff_member_required, name="dispatch")
-class UpdateCourse(UpdateView):
+class UpdateCourse(UpdateView, SingleTableView):
+	table_class = CourseListTable
 	model = Courses
 	fields = '__all__'
 	template_name = 'registration/create_form.html'
 	success_url = reverse_lazy('master:add_course')
 
-	def get_table_template(self):
-		return "registration/"+self.model.__name__.lower()+"_table.html"
+	def get_queryset(self):
+		return self.model.objects.filter().exclude(pk=self.kwargs['pk'])
+
+	def get_object(self):
+		return self.model.objects.get(pk=self.kwargs['pk'])
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		context['object_list'] = self.model.objects.filter().exclude(pk=self.kwargs['pk'])
 		context['title'] = 'Add Course'
 		context['list_title'] = 'Course List'
-		context['table_template'] = self.get_table_template()
 		context['list_id'] = 'add_course'
 		return context
 
 
 @method_decorator(staff_member_required, name='dispatch')
-class AddSubject(CreateView):
+class AddSubject(CreateView, SingleTableView):
+	table_class = SubjectListTable
 	model = Subject
 	fields = '__all__'
 	template_name = 'registration/create_form.html'
@@ -131,142 +126,138 @@ class AddSubject(CreateView):
 		return context
 
 @method_decorator(staff_member_required, name="dispatch")
-class UpdateSubject(UpdateView):
+class UpdateSubject(UpdateView, SingleTableView):
+	table_class = SubjectListTable
 	model = Subject
 	fields = '__all__'
 	template_name = 'registration/create_form.html'
 	success_url = reverse_lazy('master:add_subject')
 
-	def get_table_template(self):
-		return "registration/"+self.model.__name__.lower()+"_table.html"
+	def get_queryset(self):
+		return self.model.objects.filter().exclude(pk=self.kwargs['pk'])
+
+	def get_object(self):
+		return self.model.objects.get(pk=self.kwargs['pk'])
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		context['object_list'] = self.model.objects.filter().exclude(pk=self.kwargs['pk'])
 		context['title'] = 'Add Subject'
 		context['list_title'] = 'Subject List'
-		context['table_template'] = self.get_table_template()
 		context['list_id'] = 'add_subject'
 		return context
 
 
 @method_decorator(staff_member_required, name='dispatch')
-class AddPSubject(CreateView):
+class AddPSubject(CreateView, SingleTableView):
+	table_class = PSubjectListTable
 	form_class = PsubjectForm
 	model = practical
 	template_name = 'registration/create_form.html'
 	success_url = reverse_lazy('master:add_psubject')
 
-	def get_table_template(self):
-		return "registration/"+self.model.__name__.lower()+"_table.html"
-
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		context['object_list'] = self.model.objects.all()
 		context['title'] = 'Add Practical Subject'
 		context['list_title'] = 'Practical  Subject List'
-		context['table_template'] = self.get_table_template()
 		context['list_id'] = 'add_psubject'
 		return context
 
 @method_decorator(staff_member_required, name="dispatch")
-class UpdatePSubject(UpdateView):
+class UpdatePSubject(UpdateView, SingleTableView):
+	table_class = PSubjectListTable
 	model = practical
 	form_class = PsubjectForm
 	template_name = 'registration/create_form.html'
 	success_url = reverse_lazy('master:add_psubject')
 
-	def get_table_template(self):
-		return "registration/"+self.model.__name__.lower()+"_table.html"
+	def get_queryset(self):
+		return self.model.objects.filter().exclude(pk=self.kwargs['pk'])
+
+	def get_object(self):
+		return self.model.objects.get(pk=self.kwargs['pk'])
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		context['object_list'] = self.model.objects.filter().exclude(pk=self.kwargs['pk'])
 		context['title'] = 'Add Practical Subject'
 		context['list_title'] = 'Practical Subject List'
-		context['table_template'] = self.get_table_template()
 		context['list_id'] = 'add_psubject'
 		return context
 
 @method_decorator(staff_member_required, name='dispatch')
-class AddSession(CreateView):
+class AddSession(CreateView, SingleTableView):
+	table_class = SessionListTable
 	model = Session
 	fields = '__all__'
 	template_name = 'registration/create_form.html'
 	success_url = reverse_lazy('master:add_session')
 
-	def get_table_template(self):
-		return "registration/"+self.model.__name__.lower()+"_table.html"
-
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		context['object_list'] = self.model.objects.all()
 		context['title'] = 'Add Session'
 		context['list_title'] = 'Session List'
-		context['table_template'] = self.get_table_template()
 		context['list_id'] = 'add_session'
 		return context
 
 @method_decorator(staff_member_required, name="dispatch")
-class UpdateSession(UpdateView):
+class UpdateSession(UpdateView, SingleTableView):
 	model = Session
 	fields = '__all__'
 	template_name = 'registration/create_form.html'
 	success_url = reverse_lazy('master:add_session')
 
-	def get_table_template(self):
-		return "registration/"+self.model.__name__.lower()+"_table.html"
+	def get_queryset(self):
+		return self.model.objects.filter().exclude(pk=self.kwargs['pk'])
+
+	def get_object(self):
+		return self.model.objects.get(pk=self.kwargs['pk'])
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		context['object_list'] = self.model.objects.filter().exclude(pk=self.kwargs['pk'])
 		context['title'] = 'Add Session'
 		context['list_title'] = 'Session List'
-		context['table_template'] = self.get_table_template()
 		context['list_id'] = 'add_session'
 		return context
 
 @method_decorator(staff_member_required, name='dispatch')
-class AddComposition(CreateView):
+class AddComposition(CreateView, SingleTableView):
+	table_class = CompositionListTable
 	model = Composition
 	fields = '__all__'
 	template_name = 'registration/create_form.html'
 	success_url = reverse_lazy('master:add_composition')
 
-	def get_table_template(self):
-		return "registration/"+self.model.__name__.lower()+"_table.html"
-
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		context['object_list'] = self.model.objects.all()
 		context['title'] = 'Add Composition'
 		context['list_title'] = 'Composition List'
-		context['table_template'] = self.get_table_template()
 		context['list_id'] = 'add_composition'
 		return context
 
 @method_decorator(staff_member_required, name="dispatch")
-class UpdateComposition(UpdateView):
+class UpdateComposition(UpdateView, SingleTableView):
+	table_class = CompositionListTable
 	model = Composition
 	fields = '__all__'
 	template_name = 'registration/create_form.html'
 	success_url = reverse_lazy('master:add_composition')
 
-	def get_table_template(self):
-		return "registration/"+self.model.__name__.lower()+"_table.html"
+	def get_queryset(self):
+		return self.model.objects.filter().exclude(pk=self.kwargs['pk'])
+
+	def get_object(self):
+		return self.model.objects.get(pk=self.kwargs['pk'])
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		context['object_list'] = self.model.objects.filter().exclude(pk=self.kwargs['pk'])
 		context['title'] = 'Add Composition'
 		context['list_title'] = 'Composition List'
-		context['table_template'] = self.get_table_template()
 		context['list_id'] = 'add_composition'
 		return context
 
 
 @method_decorator(staff_member_required, name='dispatch')
-class AddFee(SuccessMessageMixin, CreateView):
+class AddFee(SuccessMessageMixin, CreateView, SingleTableView):
+	table_class = FeeMasterListTable
 	model = FeeMaster
 	# fields = '__all__'
 	form_class = AddFeeForm
@@ -274,35 +265,32 @@ class AddFee(SuccessMessageMixin, CreateView):
 	success_url = reverse_lazy('master:add_fee')
 	success_message = 'Course :- %(course)s, Feehead :- %(feehead)s, Gender :- %(gender)s, Board :- %(board)s Fee successfully added for all category'
 
-	def get_table_template(self):
-		return "registration/"+self.model.__name__.lower()+"_table.html"
-
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		context['object_list'] = self.model.objects.all()
 		context['title'] = 'Add Fee'
 		context['list_title'] = 'Fee List'
-		context['table_template'] = self.get_table_template()
 		context['list_id'] = 'add_fee'
 		return context
 
 @method_decorator(staff_member_required, name="dispatch")
-class UpdateFee(SuccessMessageMixin, UpdateView):
+class UpdateFee(SuccessMessageMixin, UpdateView, SingleTableView):
+	table_class = FeeMasterListTable
 	model = FeeMaster
 	form_class = UpdateFeeForm
 	template_name = 'registration/create_form.html'
 	success_url = reverse_lazy('master:add_fee')
 	success_message = 'Fee Structure Successfully Updated'
 
-	def get_table_template(self):
-		return "registration/"+self.model.__name__.lower()+"_table.html"
+	def get_queryset(self):
+		return self.model.objects.filter().exclude(pk=self.kwargs['pk'])
+
+	def get_object(self):
+		return self.model.objects.get(pk=self.kwargs['pk'])
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		context['object_list'] = self.model.objects.filter().exclude(pk=self.kwargs['pk'])
 		context['title'] = 'Add Fee'
 		context['list_title'] = 'Fee List'
-		context['table_template'] = self.get_table_template()
 		context['list_id'] = 'add_fee'
 		return context
 
@@ -314,14 +302,10 @@ def EditProfile(request):
 	}
 	if request.method == 'POST':
 		try:
-			print(request.POST.get('username'))
-			context['student'] = User.objects.get(username=request.POST.get('username')).profile
-			context['table_template'] = 'registration/student_search.html'
-			context['object_list'] = True
+			context['table'] = StudentTable(Profile.objects.filter(user__username__contains=request.POST.get('username')))
 		except Exception as e:
 			print(e)
 			form.add_error('username', 'No User Found {}'.format(request.POST.get('username')))
-	print(context)
 	return render(request, 'registration/create_form.html', context)
 
 @method_decorator(staff_member_required, name="dispatch")
@@ -396,30 +380,14 @@ class AddStudent(SuccessMessageMixin, CreateView):
 
 
 @method_decorator(staff_member_required, name="dispatch")
-class AddBulkStudent(SuccessMessageMixin, FormView):
+class AddBulkStudent(SuccessMessageMixin, CreateView):
 	form_class = AddBulkStudent
 	template_name = 'master/profile_form.html'
 	success_url = reverse_lazy('master:add_bstudent')
 	success_message = 'Data successfully created'
 
-class PaidStudentFilter(filters.FilterSet):
-	profile__reg_no = django_filters.CharFilter(lookup_expr='contains')
-	amount__gt = django_filters.NumberFilter(field_name='amount', lookup_expr='gt')
-
-	class Meta:
-	    model = PaymentStatus
-	    fields = ('profile__reg_no', 'profile__phone', 'easepayid', 'profile__coursedetail__course')
-
-class PaidStudentTable(tables.Table):
-	class Meta:
-	    model = PaymentStatus
-	    template_name = "django_tables2/bootstrap.html"
-	    fields = ('profile.reg_no', 'profile.user.first_name', 'profile.f_name', 'profile.phone', \
-	    		'profile.coursedetail.course', 'easepayid', 'amount', 'created_at')
-	    attrs = {"class": "table table-bordered table-hover"}
-
 @method_decorator(staff_member_required, name="dispatch")
-class PaidStudentReport(ExportMixin, SingleTableMixin, FilterView):
+class PaidStudentReport(SingleTableMixin, FilterView):
     table_class = PaidStudentTable
     model = PaymentStatus
     template_name = "master/paid.html"
@@ -479,22 +447,6 @@ def PaidReportDownload(request):
 	data.to_csv(path_or_buf=response,sep=';',float_format='%.2f')
 	return response
 
-class PaidCLCFilter(filters.FilterSet):
-	profile__reg_no = django_filters.CharFilter(lookup_expr='contains')
-	amount__gt = django_filters.NumberFilter(field_name='amount', lookup_expr='gt')
-
-	class Meta:
-	    model = PaymentStatus
-	    fields = ('profile__reg_no', 'easepayid', 'profile__clcstudent__course')
-
-class PaidCLCTable(tables.Table):
-	class Meta:
-	    model = PaymentStatus
-	    template_name = "django_tables2/bootstrap.html"
-	    fields = ('profile.reg_no', 'profile.user.first_name', 'profile.f_name', 'profile.phone', \
-	    		'profile.clcstudent.course', 'easepayid', 'amount', 'created_at')
-	    attrs = {"class": "table table-bordered table-hover"}
-
 @method_decorator(staff_member_required, name="dispatch")
 class PaidCLCReport(ExportMixin, SingleTableMixin, FilterView):
     table_class = PaidCLCTable
@@ -545,40 +497,38 @@ def PaidCLCDownload(request):
 
 
 @method_decorator(staff_member_required, name="dispatch")
-class AddClcFee(SuccessMessageMixin, CreateView):
+class AddClcFee(SuccessMessageMixin, CreateView, SingleTableView):
+	table_class = CLCFeeListTable
 	model = CLCFee
 	fields = '__all__'
 	template_name = 'registration/create_form.html'
 	success_url = reverse_lazy('master:add_clc_fee')
 
-	def get_table_template(self):
-		return "registration/"+self.model.__name__.lower()+"_table.html"
-
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		context['object_list'] = self.model.objects.all()
 		context['title'] = 'Add CLC Fee'
 		context['list_title'] = 'CLC Fee List'
-		context['table_template'] = self.get_table_template()
-		# context['list_id'] = 'add_board'
+		context['list_id'] = 'add_clc'
 		return context
 
 @method_decorator(staff_member_required, name="dispatch")
-class UpdateCLCFee(UpdateView):
+class UpdateCLCFee(UpdateView, SingleTableView):
+	table_class = CLCFeeListTable
 	model = CLCFee
 	fields = '__all__'
 	template_name = 'registration/create_form.html'
 	success_url = reverse_lazy('master:add_clc_fee')
 	success_message = 'Fee Structure Successfully Updated'
 
-	def get_table_template(self):
-		return "registration/"+self.model.__name__.lower()+"_table.html"
+	def get_queryset(self):
+		return self.model.objects.filter().exclude(pk=self.kwargs['pk'])
+
+	def get_object(self):
+		return self.model.objects.get(pk=self.kwargs['pk'])
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		context['object_list'] = self.model.objects.filter().exclude(pk=self.kwargs['pk'])
 		context['title'] = 'Add CLC Fee'
 		context['list_title'] = 'CLC FEE List'
-		context['table_template'] = self.get_table_template()
-		context['list_id'] = 'add_fee'
+		context['list_id'] = 'add_clc'
 		return context

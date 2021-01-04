@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load render_table from django_tables2 %}
 
 {% block body-attr %}class="no-skin"{% endblock %}
 
@@ -135,12 +136,11 @@
                                     <div class="tabbable">
                                     	<table class="table table-striped table-bordered table-hover">
 										   <thead class="thin-border-bottom">
-										   {% if object_list %}
-										    {% include table_template %}
-										    {% endif %}
+										   {% if table %}
+                                               {% render_table table %}
+                                           {% endif %}
 										   </tbody>
 										</table>
-
                                     </div>
                                 </div>
                                 </div>

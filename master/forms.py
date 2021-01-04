@@ -115,7 +115,13 @@ class AddBulkStudent(forms.ModelForm):
 		print(data)
 		try:
 			with transaction.atomic():
-				df = pd.read_excel(data['file'], engine='openpyxl')
+				ext = data['file'].name.split('.')[-1]
+				if ext == 'csv':
+					df = pd.read_csv(data['file'])
+				elif ext in ['xlsx', 'xls']:
+					df = pd.read_excel(data['file'], engine='openpyxl')
+				else:
+					raise ValidationError('Not Valid File')
 				if df['Student Ref. No'].duplicated().any():
 					raise ValidationError('Duplicated Record Exist in this file please remove first')
 				df.rename(columns=ren, inplace=True)
@@ -151,8 +157,8 @@ class AddBulkStudent(forms.ModelForm):
 				pf1.to_sql(StudentFee.objects.model._meta.db_table, engine, if_exists='append')
 		except Exception as e:
 			raise ValidationError(e)
+		print('returning data', data)
 		return data
-
 
 class AddFeeForm(forms.ModelForm):
 

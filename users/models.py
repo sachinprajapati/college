@@ -105,6 +105,9 @@ class Profile(models.Model):
 			return self.clcstudent.course
 		return self.coursedetail.course
 
+	def get_absolute_url(self):
+		return reverse_lazy('master:update_student', args=[str(self.id)])
+
 	def __str__(self):
 		return self.reg_no
 
@@ -116,6 +119,7 @@ class Board(models.Model):
 	def __str__(self):
 		return '{}'.format(self.name)
 
+	# @property
 	def get_absolute_url(self):
 		return reverse_lazy('master:update_board', args=[str(self.id)])
 
@@ -319,3 +323,4 @@ class CLCFee(models.Model):
 
 	def get_absolute_url(self):
 		return reverse_lazy('master:update_clc_fee', args=[str(self.id)])
+
