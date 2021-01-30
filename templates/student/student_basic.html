@@ -129,33 +129,33 @@
                                             <div class="tab-content">
                                                 <div class="row">
                                                     <div align="Left" class="col-lg-2" style="padding-left: 30px;">
-                                                        <b>Student Name</b>
-                                                    </div>
-                                                    <div align="center" class="col-lg-4">
-                                                        <input name="ctl00$ContentPlaceHolder1$txtstudentName" type="text" value="{{ user.get_full_name }}" readonly="readonly" id="ContentPlaceHolder1_txtstudentName" class="form-control" onkeypress="return lettersOnly(event)">
-                                                    </div>
-                                                    <div align="Left" class="col-lg-2" style="padding-left: 30px;">
                                                         <b>Registration Number</b>
                                                     </div>
                                                     <div align="center" class="col-lg-4">
                                                         <input type="text" value="{{ user }}" class="form-control" disabled>
                                                     </div>
+                                                    <div align="Left" class="col-lg-2" style="padding-left: 30px;">
+                                                        <b>Student Name</b>
+                                                    </div>
+                                                    <div align="center" class="col-lg-4">
+                                                        <input name="ctl00$ContentPlaceHolder1$txtstudentName" type="text" value="{{ user.get_full_name }}" readonly="readonly" id="ContentPlaceHolder1_txtstudentName" class="form-control" onkeypress="return lettersOnly(event)">
+                                                    </div>
                                                 </div>
                                                 <div class="row" style="padding-top: 5px;">
+                                                    <div align="Left" class="col-lg-2" style="padding-left: 30px;">
+                                                        <b>Father's/Husband Name</b>
+                                                    </div>
+                                                    <div align="center" class="col-lg-4">
+                                                        <!-- <input name="" type="text" id="ContentPlaceHolder1_txtfathersname" class="form-control"> -->
+                                                        {{ form.f_name }}
+                                                    </div>
                                                     <div align="Left" class="col-lg-2" style="padding-left: 30px;">
                                                         <b>Mother's Name</b>
                                                     </div>
                                                     <div align="center" class="col-lg-4">
                                                         {{ form.m_name }}
                                                     </div>
-                                                    <div align="Left" class="col-lg-2" style="padding-left: 30px;">
-                                                        <b>Student Gender</b>
-                                                    </div>
-                                                    <div align="left" class="col-lg-4">
-                                                        <div id="ContentPlaceHolder1_pnlgender" class="aspNetDisabled">
-                                                        {{ form.gender }}
-														</div>
-                                                    </div>
+
                                                 </div>
                                                 <div class="row" style="padding-top: 5px;">
                                                     <div align="Left" class="col-lg-2" style="padding-left: 30px;">
@@ -180,11 +180,12 @@
                                                     </div>
 
                                                     <div align="Left" class="col-lg-2" style="padding-left: 30px;">
-                                                        <b>Father's/Husband Name</b>
+                                                        <b>Student Gender</b>
                                                     </div>
-                                                    <div align="center" class="col-lg-4">
-                                                        <!-- <input name="" type="text" id="ContentPlaceHolder1_txtfathersname" class="form-control"> -->
-                                                        {{ form.f_name }}
+                                                    <div align="left" class="col-lg-4">
+                                                        <div id="ContentPlaceHolder1_pnlgender" class="aspNetDisabled">
+                                                        {{ form.gender }}
+														</div>
                                                     </div>
                                                 </div>
                                                 <hr>
