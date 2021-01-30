@@ -12,7 +12,7 @@ GENDER = [
 
 CATEGORY = [
 	("G", 'General'),
-	("O", 'OBC'),
+	("O", 'BC'),
 	("E", 'EBC'),
 	("C", 'SC'),
 	("T", 'ST'),
@@ -126,4 +126,10 @@ PAYMENT_STATUS = [
 CLC_FEE_TYPE = [
 	(1, 'Normal Fee'),
 	(2, 'Tatkal Fee'),
+]
+
+COURSE_TYPE = [
+	(1, 'Vocational UG'),
+	(2, 'Vocational PG'),
+	(3, 'General PG'),
 ]

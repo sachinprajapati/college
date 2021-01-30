@@ -69,9 +69,8 @@ class Profile(models.Model):
 	img = models.ImageField(upload_to=student_directory, verbose_name="Student Passport Photo", null=True, storage=OverwriteStorage())
 	sign = models.ImageField(upload_to=sign_directory, verbose_name="Student Signature", null=True, storage=OverwriteStorage())
 	clc = models.ImageField(upload_to=clc_directory, null=True, blank=True, storage=OverwriteStorage())
-	caste = models.ImageField(upload_to=caste_directory, null=True, blank=True, verbose_name="Caste-EWS", storage=OverwriteStorage())
+	caste = models.ImageField(upload_to=caste_directory, null=True, blank=True, verbose_name="Caste", storage=OverwriteStorage())
 	migration = models.ImageField(upload_to=migration_directory, null=True, blank=True, verbose_name="Migration Certificate", storage=OverwriteStorage())
-	cota = models.ImageField(upload_to=cota_directory, null=True, blank=True, verbose_name="SPECIAL COTA DOCUMENT", storage=OverwriteStorage())
 	status = models.BooleanField(default=False)
 	merit = models.PositiveIntegerField(choices=MERIT_LIST_CHOICES, null=True, blank=True)
 	clc_status = models.BooleanField(default=False)
@@ -143,8 +142,8 @@ class College(models.Model):
 	def __str__(self):
 		return '{}'.format(self.name)
 
-
 class Courses(models.Model):
+	type = models.PositiveIntegerField(choices=COURSE_TYPE, default=1)
 	name = models.CharField(max_length=255, verbose_name="Course Name", unique=True)
 	status = models.CharField(max_length=1, choices=BOOLEAN_STATUS)
 	college = models.ForeignKey(College, on_delete=models.CASCADE)
@@ -236,17 +235,20 @@ class PreviousEducation(models.Model):
 	def get_marks_perc(self):
 		return (self.obtained_marks*100)/self.total_marks
 
-ACADEMIC_SESSION = [(str(year)+"-"+str(year+1), str(year)+"-"+str(year+1)) for year in range(date.today().year, 1984, -1)]
+ACADEMIC_SESSION = [
+	('1', '2020-2022'),
+	('2', '2020-2023'),
+]
 
 class CourseDetail(models.Model):
 	profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
 	course = models.ForeignKey(Courses, on_delete=models.CASCADE)
-	last_session = models.CharField(max_length=9, choices=ACADEMIC_SESSION)
-	enroll_session = models.ForeignKey(Session, on_delete=models.CASCADE)
-	inter_marks = models.PositiveIntegerField(verbose_name='12th Marksheet No', null=True)
-	inter_roll_code = models.PositiveIntegerField(null=True, blank=True, verbose_name="12'th Roll Code")
-	inter_roll_no = models.PositiveIntegerField(verbose_name="12'th Roll No", null=True)
-	hons_paper = models.ForeignKey(Subject, on_delete=models.CASCADE)
+	last_session = models.CharField(max_length=9, choices=ACADEMIC_SESSION, null=True)
+	enroll_session = models.ForeignKey(Session, on_delete=models.CASCADE, null=True)
+	inter_marks = models.CharField(max_length=255, verbose_name='12th Marksheet No', null=True)
+	inter_roll_code = models.CharField(max_length=255, null=True, blank=True, verbose_name="12'th Roll Code")
+	inter_roll_no = models.CharField(max_length=255, verbose_name="12'th Roll No", null=True)
+	hons_paper = models.ForeignKey(Subject, on_delete=models.CASCADE, null=True)
 	sub1_paper = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name="sub1_paper", null=True)
 	sub2_paper = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name="sub2_paper", null=True)
 	comp_paper = models.ForeignKey(Composition, on_delete=models.CASCADE, null=True)

@@ -152,7 +152,10 @@
                                                 <div class="profile-user-info">
 													{% for i in form %}
 														{% if i.field.widget.input_type == 'number' %}
-															{{ i|as_crispy_field }}
+                                                            <div class="form-group">
+                                                            {{ i.label|upper }}
+															{{ i }}
+                                                            </div>
 														{% endif %}
 													{% endfor %}
                                                 </div>

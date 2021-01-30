@@ -26,15 +26,6 @@ import json
 from .models import *
 from .forms import *
 
-def StudentFeeHead(function):
-    def wrapper(request, *args, **kw):
-        user=request.user  
-        if not StudentFee.objects.filter(profile=user.profile, feehead=2).exists():
-            return HttpResponseRedirect(reverse_lazy('college:college_dashboard'))
-        else:
-            return function(request, *args, **kw)
-    return wrapper
-
 def PaymentStatusDeco(function):
 	def wrapper(request, *args, **kwargs):
 		if PaymentStatus.objects.filter(profile=request.user.profile, status=1).exists():
@@ -58,7 +49,7 @@ def Dashboard(request):
 class StudentBasicInfo(LoginRequiredMixin, UpdateView):
 	form_class = StudentForms
 	template_name = 'student/student_basic.html'
-	# success_url = reverse_lazy("college:student_education")
+	success_url = reverse_lazy("college:student_education")
 
 	def get_object(self):
 		return self.request.user.profile
@@ -68,15 +59,14 @@ class StudentBasicInfo(LoginRequiredMixin, UpdateView):
 	    kwargs.update({'user': self.request.user})
 	    return kwargs
 
-	def get_success_url(self, **kwargs):
-		if self.request.user.profile.clc_status:
-			return reverse_lazy('college:clc_course')
-		elif not StudentFee.objects.filter(profile=self.request.user.profile, feehead=2).exists():
-			return reverse_lazy('college:student_course')
-		else:
-			reverse_lazy("college:student_education")
+	# def get_success_url(self, **kwargs):
+	# 	if self.request.user.profile.clc_status:
+	# 		return reverse_lazy('college:clc_course')
+	# 	elif not StudentFee.objects.filter(profile=self.request.user.profile, feehead=2).exists():
+	# 		return reverse_lazy('college:student_course')
+	# 	else:
+	# 		reverse_lazy("college:student_education")
 
-@StudentFeeHead
 @login_required
 @PaymentStatusDeco
 def StudentEducationDetails(request):
@@ -91,7 +81,7 @@ def StudentEducationDetails(request):
 	context = {"form": form}
 	return render(request, 'student/student_education.html', context)
 
-@method_decorator([StudentFeeHead, PaymentStatusDeco], name="dispatch")
+@method_decorator([PaymentStatusDeco], name="dispatch")
 class StudentEducationUpdate(LoginRequiredMixin, UpdateView):
 	model = PreviousEducation
 	template_name = 'student/student_education.html'

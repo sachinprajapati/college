@@ -258,7 +258,13 @@
 {% block end-script %}
 <script type="text/javascript">
     $("#id_total_marks,#id_obtained_marks").on("keyup change", function(e) {
-        var per = ($("#id_obtained_marks").val()*100)/$("#id_total_marks").val();
+        var obt = $("#id_obtained_marks").val();
+        var tot = $("#id_total_marks").val();
+        if (obt>tot){
+            alert("Obtained Marks cannot exceed from total marks");
+            $("#id_obtained_marks").val('');
+        }
+        var per = (obt*100)/tot;
         $("#ContentPlaceHolder1_txtpercentagemarks").val(per);
     })
     $(document).ready(function(){

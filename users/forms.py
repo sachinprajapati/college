@@ -20,20 +20,17 @@ class StudentForms(forms.ModelForm):
 		super(StudentForms, self).__init__(*args, **kwargs)
 		for visible in self.visible_fields():
 		    visible.field.widget.attrs['class'] = 'form-control'
+		self.fields['g_income'].widget.attrs['placeholder'] = "Enter Digits only"
 		self.fields['address'].widget.attrs['rows'] = 4
 		self.fields['img'].widget.attrs['onchange'] = "document.getElementById('id_img_display').src = window.URL.createObjectURL(this.files[0])"
 		self.fields['sign'].widget.attrs['onchange'] = "document.getElementById('id_sign_display').src = window.URL.createObjectURL(this.files[0])"
 		self.fields['clc'].widget.attrs['onchange'] = "document.getElementById('id_clc_display').src = window.URL.createObjectURL(this.files[0])"
 		self.fields['caste'].widget.attrs['onchange'] = "document.getElementById('id_caste_display').src = window.URL.createObjectURL(this.files[0])"
 		self.fields['migration'].widget.attrs['onchange'] = "document.getElementById('id_mig_display').src = window.URL.createObjectURL(this.files[0])"
-		self.fields['cota'].widget.attrs['onchange'] = "document.getElementById('id_cota_display').src = window.URL.createObjectURL(this.files[0])"
 
 	class Meta:
 		model = Profile
 		exclude = ('reg_no', 'dob', 'phone', 'clc_status')
-		widgets = {
-            'dob': DateInput()
-        }
 
 	def clean_email(self):
 		data = self.cleaned_data
@@ -91,7 +88,6 @@ class StudentCourseExist(forms.ModelForm):
 		super(StudentCourseExist, self).__init__(*args, **kwargs)
 		for visible in self.visible_fields():
 		    visible.field.widget.attrs['class'] = 'form-control'
-		self.fields['course'].widget.attrs['readonly'] = True
 		self.fields['last_session'].widget.attrs['readonly'] = True
 		self.fields['enroll_session'].widget.attrs['readonly'] = True
 		self.fields['hons_paper'].widget.attrs['readonly'] = True
@@ -100,6 +96,7 @@ class StudentCourseExist(forms.ModelForm):
 		model = CourseDetail
 		# exclude = ('course', 'last_session', 'enroll_session', 'hons_paper')
 		fields = '__all__'
+		exclude = ('course',)
 
 	def clean(self):
 		data = self.cleaned_data

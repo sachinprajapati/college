@@ -117,9 +117,7 @@
                                                 <!-- Nav tabs -->
                                                 <ul class="nav nav-tabs">
                                                     <li class="active"><a href="#"><i class="green ace-icon fa fa-user-md bigger-120"></i>Student Basic Profile Information</a></li>
-                                                    {% if first_year %}
                                                     <li><a href="{% url 'college:student_education' %}"><i class="green ace-icon fa fa-university bigger-120"></i>Student Previous Education Details</a></li>
-                                                    {% endif %}
                                                     <li><a href="{% if request.user.profile.clc_status %}{% url 'college:clc_course' %}{% else %}{% url 'college:student_course' %}{% endif %}"><i class="green ace-icon fa fa-book bigger-120"></i>Student Academic Course</a></li>
                                                 </ul>
                                             </div>
@@ -137,11 +135,10 @@
                                                         <input name="ctl00$ContentPlaceHolder1$txtstudentName" type="text" value="{{ user.get_full_name }}" readonly="readonly" id="ContentPlaceHolder1_txtstudentName" class="form-control" onkeypress="return lettersOnly(event)">
                                                     </div>
                                                     <div align="Left" class="col-lg-2" style="padding-left: 30px;">
-                                                        <b>Father's/Husband Name</b>
+                                                        <b>Registration Number</b>
                                                     </div>
                                                     <div align="center" class="col-lg-4">
-                                                        <!-- <input name="" type="text" id="ContentPlaceHolder1_txtfathersname" class="form-control"> -->
-                                                        {{ form.f_name }}
+                                                        <input type="text" value="{{ user }}" class="form-control" disabled>
                                                     </div>
                                                 </div>
                                                 <div class="row" style="padding-top: 5px;">
@@ -167,10 +164,7 @@
                                                     <div align="Left" class="col-lg-2">
                                                         <input type="date" value="{{ user.profile.dob|date:"Y-m-d" }}" class="form-control" disabled="">
                                                     </div>
-                                                    <div align="Left" class="col-lg-2" style="color: red; font-style: italic;">
-                                                        * Must Enter Valid Date Of Birth.
-                                                    </div>
-                                                    <div align="Left" class="col-lg-2" style="padding-left: 30px;">
+                                                    <div align="Left" class="col-lg-2 col-lg-offset-2" style="padding-left: 30px;">
                                                         <b>Marital Status </b>
                                                     </div>
                                                     <div align="center" class="col-lg-4">
@@ -184,11 +178,13 @@
                                                     <div align="center" class="col-lg-4">
                                                         {{ form.adhar }}
                                                     </div>
+
                                                     <div align="Left" class="col-lg-2" style="padding-left: 30px;">
-                                                        <b>Registration No.</b>
+                                                        <b>Father's/Husband Name</b>
                                                     </div>
                                                     <div align="center" class="col-lg-4">
-                                                        {{ form.reg_no }}
+                                                        <!-- <input name="" type="text" id="ContentPlaceHolder1_txtfathersname" class="form-control"> -->
+                                                        {{ form.f_name }}
                                                     </div>
                                                 </div>
                                                 <hr>
@@ -327,15 +323,15 @@
                                                     </div>
                                                 </div>
                                                 <hr>
-                                                {% if first_year %}
                                                 <div class="row" style="padding-top: 10px;">
                                                     <div class="col-lg-6" style="padding-left: 25px;">
                                                         <div class="row">
                                                             <div class="col-lg-6">
                                                                 <label><b>{{ form.clc.label }}</b></label>
                                                                 <span class=" btn btn-success" style="width: 100%; height: 40px;">
-                                                                    <!-- <input type="file" name="clc" accept="image/*" id="id_clc"  onchange="document.getElementById('id_clc_display').src = window.URL.createObjectURL(this.files[0])"> -->
-                                                                    {{ form.clc }}
+                                                                    <label>CLC</label>
+                                                                    <input type="file" style="margin-top: -30px;" name="clc" accept="image/*" class="form-control" onchange="document.getElementById('id_clc_display').src = window.URL.createObjectURL(this.files[0])" id="id_clc">
+{#                                                                    {{ form.clc }}#}
                                                                 </span>
                                                             </div>
                                                             <div class="col-lg-6">
@@ -343,6 +339,26 @@
                                                             </div>
                                                         </div>
                                                     </div>
+
+                                                    <div class="col-lg-6" style="padding-left: 25px;">
+                                                        <div class="row">
+                                                            <div class="col-lg-6">
+                                                                <label><b>{{ form.migration.label }}</b></label>
+                                                                <span class=" btn btn-success" style="width: 100%; height: 40px;">
+                                                                    <!-- <input type="file" name="migration" accept="image/*" id="id_migration" onchange="document.getElementById('id_mig_display').src = window.URL.createObjectURL(this.files[0])" style="max-height: 120px;"> -->
+                                                                    {{ form.migration }}
+                                                                </span>
+                                                            </div>
+                                                            <div class="col-lg-6">
+                                                                <img src="{% if user.profile.migration %}{{ user.profile.migration.url }}{% endif %}" id="id_mig_display" class="img-responsive" style="max-height: 120px;">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <hr>
+
+                                            <div id="additional_document">
+                                                <div class="row" style="padding-top: 10px;">
                                                     <div class="col-lg-6">
                                                         <div class="row">
                                                             <div class="col-lg-6">
@@ -358,38 +374,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <hr>
-                                                <div class="row" style="padding-top: 10px;">
-                                                    <div class="col-lg-6" style="padding-left: 25px;">
-                                                        <div class="row">
-                                                            <div class="col-lg-6">
-                                                                <label><b>{{ form.migration.label }}</b></label>
-                                                                <span class=" btn btn-success" style="width: 100%; height: 40px;">
-                                                                    <!-- <input type="file" name="migration" accept="image/*" id="id_migration" onchange="document.getElementById('id_mig_display').src = window.URL.createObjectURL(this.files[0])" style="max-height: 120px;"> -->
-                                                                    {{ form.migration }}
-                                                                </span>
-                                                            </div>
-                                                            <div class="col-lg-6">
-                                                                <img src="{% if user.profile.migration %}{{ user.profile.migration.url }}{% endif %}" id="id_mig_display" class="img-responsive" style="max-height: 120px;">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-lg-6">
-                                                        <div class="row">
-                                                            <div class="col-lg-6">
-                                                                <label><b>{{ form.cota.label }}</b></label>
-                                                                <span class=" btn btn-success" style="width: 100%; height: 40px;">
-                                                                    <!-- <input type="file" name="cota" accept="image/*" id="id_cota"  onchange="document.getElementById('id_cota_display').src = window.URL.createObjectURL(this.files[0])"> -->
-                                                                    {{ form.cota }}
-                                                                </span>
-                                                            </div>
-                                                            <div class="col-lg-6">
-                                                                <img src="{% if user.profile.cota %}{{ user.profile.cota.url }}{% endif %}" id="id_cota_display" class="img-responsive" style="max-height: 120px;">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                {% endif %}
+                                            </div>
                                                 <hr>
                                                 {% if form.errors %}
                                                 	{{ form.errors }}
@@ -424,4 +409,19 @@
 						</div><!-- /.row -->
 					</div><!-- /.page-content -->
 				</div>
+{% endblock %}
+
+{% block end-script %}
+    <script>
+    $('#id_category').on('change', function() {
+       var cat = this.value;
+      if(cat == "G"){
+          $("#additional_document").css("display", "none");
+          $("#id_caste"). attr("required", "false");
+      }else{
+          $("#additional_document").css("display", "block");
+          $("#id_caste"). attr("required", "true");
+      }
+    });
+    </script>
 {% endblock %}

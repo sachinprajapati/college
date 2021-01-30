@@ -48,9 +48,7 @@
                                                 <!-- Nav tabs -->
                                                 <ul class="nav nav-tabs">
                                                     <li><a href="{% url 'college:student_basic' %}"><i class="green ace-icon fa fa-user-md bigger-120"></i>Student Basic Profile Information</a></li>
-                                                    {% if first_year %}
                                                     <li><a href="{% url 'college:student_education' %}"><i class="green ace-icon fa fa-university bigger-120"></i>Student Previous Education Details</a></li>
-                                                    {% endif %}
                                                     <li class="active"><a href="#"><i class="green ace-icon fa fa-book bigger-120"></i>Student Academic Course</a></li>
                                                 </ul>
                                             </div>
@@ -68,8 +66,7 @@
                                                             <b>Course Name</b>
                                                         </div>
                                                         <div align="center" class="col-lg-2">
-                                                            {{ form.course }}
-                                                            
+                                                            <input type="text" class="form-control" value="{{ user.profile.coursedetail.course }}" disabled>
                                                         </div>
                                                         <div align="Left" class="col-lg-2">
                                                             <b>Academic Session</b>

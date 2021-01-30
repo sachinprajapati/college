@@ -26,6 +26,10 @@
       </div>
       <!-- /.sidebar-shortcuts -->
       <ul class="nav nav-list" style="top: 0px;">
+        <li><a href="{% url 'college:college_dashboard' %}">
+            <i class="menu-icon fa fa-list"></i>
+            <span class="menu-text"> Dashboard</span>
+            </a></li>
          <li class="open">
             <a href="#" class="dropdown-toggle">
             <i class="menu-icon fa fa-list"></i>
@@ -41,7 +45,6 @@
                   </a>
                   <b class="arrow"></b>
                </li>
-               {% if first_year %}
                <li>
                   <a href="{% url 'college:student_education' %}">
                   <i class="menu-icon fa fa-caret-right"></i>
@@ -49,7 +52,6 @@
                   </a>
                   <b class="arrow"></b>
                </li>
-               {% endif %}
                <li>
                   <a href="{% if request.user.profile.clc_status %}{% url 'college:clc_course' %}{% else %}{% url 'college:student_course' %}{% endif %}">
                   <i class="menu-icon fa fa-caret-right"></i>
