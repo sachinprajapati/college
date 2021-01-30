@@ -152,8 +152,8 @@
                                                 </div>
                                                 <div class="col-sm-2">
                                                     <span id="ContentPlaceHolder1_lblpaymentfor">
-                                                    {% for f in fm %}
-                                                        <strong>{{f.get_feehead_display|title}}</strong>{% if not forloop.last %}{% ifequal forloop.revcounter 2 %} and {% else %}, {% endifequal %}{% else %}{% endif %}
+                                                    {% for f in user.profile.studentfee_set.all %}
+                                                        <strong>{{ f.get_feehead_display|title }}</strong>{% if not forloop.last %}{% ifequal forloop.revcounter 2 %} and {% else %}, {% endifequal %}{% else %}{% endif %}
                                                     {% endfor %}
                                                     </span>
                                                 </div>
