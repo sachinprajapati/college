@@ -219,7 +219,7 @@ class FeeMaster(models.Model):
 		return reverse_lazy('master:update_fee', args=[str(self.id)])
 
 
-PASSOUT_YEAR = [(year%100, year) for year in range(date.today().year, 1984, -1)]
+PASSOUT_YEAR = [(year%100, year) for year in range(date.today().year-1, 1984, -1)]
 
 def student_marksheet(instance, filename):
     ext = filename.split('.')[-1]

@@ -90,10 +90,10 @@ MARKS_TYPE = [
 ]
 
 PREVIOUS_COURSE = [
-	('10', '10th'),
-	('12', '12th'),
+	# ('10', '10th'),
+	# ('12', '12th'),
 	('G' , 'Graduation'),
-	('PG', 'Post Graduation')
+	# ('PG', 'Post Graduation')
 ]
 
 MERIT_LIST_CHOICES = [
