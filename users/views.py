@@ -40,9 +40,11 @@ def Dashboard(request):
 	if request.user.is_staff:
 		return render(request, 'student/dashboard.html', context)
 	if request.user.profile.paymentstatus_set.all():
-		ps = get_object_or_404(PaymentStatus, profile=request.user.profile, status=1)
-		context = {'ps': ps}
-	print(context)
+		try:
+			ps = PaymentStatus.objects.get(profile=request.user.profile, status=1)
+			context = {'ps': ps}
+		except:
+			pass
 	return render(request, 'student/dashboard1.html', context)
 
 @method_decorator(PaymentStatusDeco, name="dispatch")
