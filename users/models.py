@@ -157,7 +157,7 @@ class Courses(models.Model):
 
 class Subject(models.Model):
 	course = models.ForeignKey(Courses, on_delete=models.CASCADE)
-	name = models.CharField(max_length=255, verbose_name="Subject Name", unique=True)
+	name = models.CharField(max_length=255, verbose_name="Subject Name")
 	status = models.CharField(max_length=1, choices=BOOLEAN_STATUS)
 	is_practical = models.BooleanField(null=True)
 
@@ -166,6 +166,11 @@ class Subject(models.Model):
 
 	def get_absolute_url(self):
 		return reverse_lazy('master:update_subject', args=[str(self.id)])
+
+	class Meta:
+		constraints = [
+			models.UniqueConstraint(fields=['course', 'name'], name='Subject already exist in with this course')
+		]
 
 
 class Session(models.Model):
@@ -193,7 +198,7 @@ class Composition(models.Model): #Optional Subject
 
 	class Meta:
 	    constraints = [
-	        models.UniqueConstraint(fields=['course', 'sub'], name='Subject already exist in with this course')
+	        models.UniqueConstraint(fields=['course', 'sub'], name='Subject already exist in this Composition')
 	    ]
 
 class FeeMaster(models.Model):
