@@ -54,21 +54,21 @@
                                             <div class="col-sm-2">
                                                 <b>Student Name</b>
                                             </div>
-                                            <div class="col-sm-4">
+                                            <div class="col-sm-2">
                                                 <span id="ContentPlaceHolder1_lblstudentname">{{ user.get_full_name }}</span>
                                             </div>
                                             <div class="col-sm-2">
                                                 <b>Registration No.</b>
                                             </div>
-                                            <div class="col-sm-3">
-                                                <span id="ContentPlaceHolder1_lblregistrationno">User Name</span>
+                                            <div class="col-sm-2">
+                                                <span id="ContentPlaceHolder1_lblregistrationno">{{ user }}</span>
                                             </div>
                                         </div>
                                         <div class="row" style="padding-top: 5px;">
                                             <div class="col-sm-2">
                                                 <b>Father's Name</b>
                                             </div>
-                                            <div class="col-sm-4">
+                                            <div class="col-sm-2">
                                                 <span id="ContentPlaceHolder1_lblfathersname">{{ user.profile.f_name }}</span>
                                             </div>
                                             <div class="col-sm-2">
@@ -144,7 +144,7 @@
                                                 <b>Academic Session</b>
                                             </div>
                                             <div class="col-sm-2">
-                                                <span id="ContentPlaceHolder1_lblaccsession">{{ user.profile.coursedetail.last_session }}</span>
+                                                <span id="ContentPlaceHolder1_lblaccsession">{{ user.profile.coursedetail.get_last_session_display }}</span>
                                             </div>
                                             {% if not user.profile.clc_status %}
                                                 <div class="col-sm-2">

@@ -20,22 +20,24 @@ class DateInput(forms.DateInput):
 class AddStudentForm(forms.ModelForm):
 	first_name = forms.CharField()
 	last_name = forms.CharField()
-	course_name = forms.ChoiceField(choices=FeeHeads)
+	feehead = forms.ChoiceField(choices=FeeHeads)
+	course_name = forms.ModelChoiceField(queryset=Courses.objects.filter())
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.helper = FormHelper()
 		self.helper.layout = Layout(
 		    Row(
+				Column('reg_no', css_class='form-group col-md-4 mb-0'),
 		        Column('first_name', css_class='form-group col-md-4 mb-0'),
 		        Column('last_name', css_class='form-group col-md-4 mb-0'),
-		        Column('phone', css_class='form-group col-md-4 mb-0'),
 		        css_class='form-row'
 		    ),
 		    Row(
-		        Column('reg_no', css_class='form-group col-md-4 mb-0'),
-		        Column('course_name', css_class='form-group col-md-4 mb-0'),
-		        Column('dob', css_class='form-group col-md-4 mb-0'),
+				Column('phone', css_class='form-group col-md-3 mb-0'),
+				Column('course_name', css_class='form-group col-md-3 mb-0'),
+		        Column('feehead', css_class='form-group col-md-3 mb-0'),
+		        Column('dob', css_class='form-group col-md-3 mb-0'),
 		        css_class='form-row'
 		    ),
 		    'check_me_out',
@@ -75,8 +77,10 @@ class AddStudentForm(forms.ModelForm):
 			m.user = u
 			m.status = True
 			m.save()
-			sf = StudentFee(feehead=self.cleaned_data['course_name'], profile=m)
+			sf = StudentFee(feehead=self.cleaned_data['feehead'], profile=m)
 			sf.save()
+			cd = CourseDetail(profile=m, course=self.cleaned_data['course_name'])
+			cd.save()
 		return m
 
 FORM_STATUS_CHOICES = [

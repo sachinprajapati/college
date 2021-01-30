@@ -162,7 +162,7 @@ def PaymentInit(request):
 	    'productinfo': 'Apple Mobile',
 	    'surl': 'http://localhost:8000/PaymentConfirmation/',
 	    'furl': 'http://localhost:8000/PaymentConfirmation/',
-	    'city': profile.city,
+	    'city': profile.city if profile.city else '',
 	    'zipcode': str(profile.pincode),
 	    'address2': 'aaaa',
 	    'state': 'aaaa',
